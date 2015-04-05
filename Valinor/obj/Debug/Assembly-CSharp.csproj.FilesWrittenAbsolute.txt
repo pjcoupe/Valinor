@@ -1,0 +1,12 @@
+/Users/Peter/Valinor/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/Peter/Valinor/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/Peter/Valinor/obj/Debug/Assembly-CSharp.dll
+/Users/Peter/Valinor/obj/Debug/Assembly-CSharp.dll.mdb
+/Users/Peter/Valinor/Temp/bin/Debug/UnityEngine.dll
+/Users/Peter/Valinor/Temp/bin/Debug/UnityEditor.dll
+/Users/Peter/Valinor/Temp/bin/Debug/Assembly-CSharp-firstpass.dll
+/Users/Peter/Valinor/Temp/bin/Debug/Assembly-CSharp-firstpass.dll.mdb
+/Users/Peter/Valinor/Temp/bin/Debug/Mono.Cecil.dll
+/Users/Peter/Valinor/Temp/bin/Debug/nunit.framework.dll
+/Users/Peter/Valinor/Temp/bin/Debug/Unity.DataContract.dll
+/Users/Peter/Valinor/Temp/bin/Debug/ICSharpCode.NRefactory.dll
