@@ -3,14 +3,13 @@ using System.Collections;
 
 public class FireBullet : MonoBehaviour {
 
-	private BulletLife bulletPrefab = null;
 	const float unrealisticMultiplier = 100f;
 	 DamageType damageType;
 	 int numberOfBullets = 2;
 	 float bulletMass = 0.01f;
 	 float bulletSpeed = 15f;
 	 float spreadDegrees = 10f;
-	 float bulletLife = 0.2f;
+	 float bulletLife = 0.5f;
 	 float regulatedMaxForce = 3000;
 
 	private float bulletFireDelay = 0.1f;
@@ -22,65 +21,65 @@ public class FireBullet : MonoBehaviour {
 	private float maxBulletLife = 5f;
 	private int maxSpreadDegrees = 60;
 
-	private float @speedMultiplier = 1f;
+	private float _speedMultiplier = 1f;
 	private float endSpeedMultiplier = 0;
 	public void SetSpeedMultiplier(float speedMultiplier, float durationSecs)
 	{
-		if (speedMultiplier != @speedMultiplier)
+		if (speedMultiplier != _speedMultiplier)
 		{
-			@speedMultiplier = speedMultiplier;
+			_speedMultiplier = speedMultiplier;
 
 		}
-		endSpeedMultiplier = @speedMultiplier == 1f ? 0 : Time.time + durationSecs;
+		endSpeedMultiplier = _speedMultiplier == 1f ? 0 : Time.time + durationSecs;
 	}
-	private float @numberOfBulletsMultiplier = 1f;
+	private float _numberOfBulletsMultiplier = 1f;
 	private float endNumberOfBulletsMultiplier = 0;
 	public void SetNumberOfBulletsMultiplier(float numberOfBulletsMultiplier, float durationSecs)
 	{
-		if (numberOfBulletsMultiplier != @numberOfBulletsMultiplier)
+		if (numberOfBulletsMultiplier != _numberOfBulletsMultiplier)
 		{
-			@numberOfBulletsMultiplier = numberOfBulletsMultiplier;
+			_numberOfBulletsMultiplier = numberOfBulletsMultiplier;
 			
 		}
-		endNumberOfBulletsMultiplier = @numberOfBulletsMultiplier == 1f ? 0 : Time.time + durationSecs;
+		endNumberOfBulletsMultiplier = _numberOfBulletsMultiplier == 1f ? 0 : Time.time + durationSecs;
 	}
-	private float @spreadMultiplier = 1f;
+	private float _spreadMultiplier = 1f;
 	private float endSpreadMultiplier = 0;
 	public void SetSpreadMultiplier(float spreadMultiplier, float durationSecs)
 	{
-		if (spreadMultiplier != @spreadMultiplier)
+		if (spreadMultiplier != _spreadMultiplier)
 		{
-			@spreadMultiplier = spreadMultiplier;		
+			_spreadMultiplier = spreadMultiplier;		
 		}
-		endSpreadMultiplier = @spreadMultiplier == 1f ? 0 : Time.time + durationSecs;
+		endSpreadMultiplier = _spreadMultiplier == 1f ? 0 : Time.time + durationSecs;
 	}
 
 
-	private float @bulletLifeMultiplier = 1f;
+	private float _bulletLifeMultiplier = 1f;
 	private float endBulletLifeMultiplier = 0;
 	public void SetBulletLifeMultiplier(float bulletLifeMultiplier, float durationSecs)
 	{
-		if (bulletLifeMultiplier != @bulletLifeMultiplier)
+		if (bulletLifeMultiplier != _bulletLifeMultiplier)
 		{
-			@bulletLifeMultiplier = bulletLifeMultiplier;		
+			_bulletLifeMultiplier = bulletLifeMultiplier;		
 		}
-		endBulletLifeMultiplier = @bulletLifeMultiplier == 1f ? 0 : Time.time + durationSecs;
+		endBulletLifeMultiplier = _bulletLifeMultiplier == 1f ? 0 : Time.time + durationSecs;
 	}
 
-	private float @bulletMassMultiplier = 1f;
+	private float _bulletMassMultiplier = 1f;
 	private float endBulletMassMultiplier = 0;
 	public void SetBulletMassMultiplier(float bulletMassMultiplier, float durationSecs)
 	{
-		if (bulletMassMultiplier != @bulletMassMultiplier)
+		if (bulletMassMultiplier != _bulletMassMultiplier)
 		{
-			@bulletMassMultiplier = bulletMassMultiplier;		
+			_bulletMassMultiplier = bulletMassMultiplier;		
 		}
-		endBulletMassMultiplier = @bulletMassMultiplier == 1f ? 0 : Time.time + durationSecs;
+		endBulletMassMultiplier = _bulletMassMultiplier == 1f ? 0 : Time.time + durationSecs;
 	}
 
 	public float GetBulletLife()
 	{ 
-		return Mathf.Min (maxBulletLife, bulletLife * @bulletLifeMultiplier);
+		return Mathf.Min (maxBulletLife, bulletLife * _bulletLifeMultiplier);
 	}
 
 	public float GetBulletSpeed()
@@ -90,7 +89,7 @@ public class FireBullet : MonoBehaviour {
 
 	public float GetSpreadDegrees()
 	{
-		return Mathf.Min (maxSpreadDegrees, spreadDegrees * @spreadMultiplier);
+		return Mathf.Min (maxSpreadDegrees, spreadDegrees * _spreadMultiplier);
 	}
 	bool isRandomWithinSpread = true;
 
@@ -111,10 +110,7 @@ public class FireBullet : MonoBehaviour {
 
     void Awake()
 	{
-		bulletPrefab = Instantiate(Resources.Load("Prefabs/ThrustBullet", typeof(BulletLife))) as BulletLife;
-		bulletPrefab.isPrefabDontDestroy = true;
-		bulletPrefab.gameObject.SetActive(false);
-		bulletPrefab.name = "BulletLife Prefab";
+		BulletLife.LoadSprites("Sprites/Player");
 
 	}
     // Use this for initialization
@@ -205,68 +201,83 @@ public class FireBullet : MonoBehaviour {
 
 	IEnumerator CreateBullets()
 	{
-		Quaternion adjusted = Quaternion.Euler(thrusterAngle);
+		float adjusted = thrusterAngle.z - 90f;
 		float t = Time.time;
 		if (endNumberOfBulletsMultiplier > 0 && t > endNumberOfBulletsMultiplier)
 		{
 			endNumberOfBulletsMultiplier = 0;
-			numberOfBulletsMultiplier = 1f;
+			_numberOfBulletsMultiplier = 1f;
 		}
 		if (endSpreadMultiplier > 0 && t > endSpreadMultiplier)
 		{
 			endSpreadMultiplier = 0;
-			spreadMultiplier = 1f;
+			_spreadMultiplier = 1f;
 		}
 		if (endBulletLifeMultiplier > 0 && t > endBulletLifeMultiplier)
 		{
 			endBulletLifeMultiplier = 0;
-			bulletLifeMultiplier = 1f;
+			_bulletLifeMultiplier = 1f;
 		}
 		if (endBulletMassMultiplier > 0 && t > endBulletMassMultiplier)
 		{
 			endBulletMassMultiplier = 0;
-			bulletMassMultiplier = 1f;
+			_bulletMassMultiplier = 1f;
 		}
 		if (endSpeedMultiplier > 0 && t > endSpeedMultiplier)
 		{
 			endSpeedMultiplier = 0;
-			speedMultiplier = 1f;
+			_speedMultiplier = 1f;
 		}
-		int numBullets = Mathf.RoundToInt(numberOfBullets * numberOfBulletsMultiplier);
+		int numBullets = Mathf.RoundToInt(numberOfBullets * _numberOfBulletsMultiplier);
 		float spreadDeg = GetSpreadDegrees();
-		float bullMass = bulletMass * bulletMassMultiplier;
+		float bullMass = bulletMass * _bulletMassMultiplier;
 		float speed = GetBulletSpeed();
 		float life = GetBulletLife();
 
 		float bulletSpreadDegrees = numBullets == 1 ? 0 : spreadDeg / (numBullets - 1);
 		float startRotation = numBullets == 1 ? 0 : spreadDeg / -2;
 		float endRotation = numBullets == 1 ? 0 : startRotation + (numBullets-1) * bulletSpreadDegrees;
-		float bulletDilution = 1f / numberOfBulletsMultiplier;
+		float bulletDilution = 1f / _numberOfBulletsMultiplier;
 		float totalForcePerSecond = unrealisticMultiplier * bulletDilution * ((float)numBullets / interBulletDelay) * (bulletMass * bulletSpeed * bulletSpeed );
 		//Debug.Log("PJC REMOVE totalForce "+totalForcePerSecond+" numBul " + numBullets + " interBD " + interBulletDelay + " Energy " + (bulletMass * bulletSpeed * bulletSpeed) +" mass "+bulletMass + " speed "+bulletSpeed);
 		float bulletForce = bulletMass * bulletSpeed * bulletSpeed;
 
 		for (int i = 0; i < numBullets; i++)
 		{
-			Quaternion rot = transform.rotation;
-			BulletLife bullet = Instantiate(bulletPrefab, transform.position, adjusted) as BulletLife;
-			bullet.isPrefabDontDestroy = false;
-			bullet.gameObject.SetActive(true);
-			bullet.damageType = damageType;
-			bullet.totalLifeSeconds = life;
-			bullet.mass = bullMass;
+			Vector3 postInstantiationRotation;
 			if (isRandomWithinSpread)
 			{
 				float rand = UnityEngine.Random.Range(startRotation, endRotation);
-				bullet.transform.Rotate (new Vector3(0, 0, rand));
+				postInstantiationRotation = new Vector3(0, 0, rand);
 			}
 			else
 			{
-				bullet.transform.Rotate (new Vector3(0, 0, startRotation + i * bulletSpreadDegrees));
+				postInstantiationRotation = new Vector3(0, 0, startRotation + i * bulletSpreadDegrees);
 			}
-			bullet.velocity = (Vector2)(bullet.transform.up * speed);
+			//Instantiate(bulletPrefab, transform.position, adjusted) as BulletLife;
+			BulletLife bullet = BulletLife.CreateBullet(
+				"PlayerBullet",
+				"PlayerBullets",
+				transform.position,
+				adjusted,
+				transform.localScale,
+				"Player_Bullet_1",
+				bullMass,
+				speed,
+				life,
+				postInstantiationRotation,
+				2,
+				0.5f,
+				null,
+				false,
+				0.1f,
+				"Character",
+				0,
+				1f,
+				0f
+				);
 
-			PlayerInfo.packRigidbody.AddForce(unrealisticMultiplier * bulletDilution * bullet.transform.up * -bulletForce, ForceMode2D.Impulse);
+			PlayerInfo.packRigidbody.AddForce(unrealisticMultiplier * bulletDilution * bullet.transform.right * bulletForce, ForceMode2D.Impulse);
 			yield return new WaitForSeconds(interBulletDelay);
 		}
 

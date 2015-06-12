@@ -14512,7 +14512,7 @@ AnimationClip:
     classID: 212
     script: {fileID: 0}
   m_SampleRate: 60
-  m_WrapMode: 0
+  m_WrapMode: 1
   m_Bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -74295,10 +74295,10 @@ AnimationClip:
     classID: 4
     script: {fileID: 0}
   m_Events:
-  - time: .833333313
+  - time: .866666675
     functionName: PlayBowStretch
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 700
     messageOptions: 0

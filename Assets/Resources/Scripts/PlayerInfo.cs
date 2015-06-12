@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿	using UnityEngine;
 using System.Collections;
 
 
@@ -21,10 +21,12 @@ public class PlayerInfo : MonoBehaviour {
 	public static Transform head { get; private set; }
 
 
+	public static Vector3 playerPosition { get { return playerTransform.position; } }
+
 	public static Transform playerTransform { get; private set; }
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		playerTransform = transform;
         transforms = gameObject.GetComponentsInChildren<Transform>();
         hingeJoints = gameObject.GetComponentsInChildren<HingeJoint2D>();

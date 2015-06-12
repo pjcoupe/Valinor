@@ -35,6 +35,9 @@ TextureImporter:
     21300060: Goblin_bomb_ready
     21300062: Goblin_shield_ready
     21300064: Goblin_string
+    21300066: Bow_Top
+    21300068: Bow_Bottom
+    21300070: Bow_Middle
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -54,8 +57,8 @@ TextureImporter:
   grayScaleToAlpha: 0
   generateCubemap: 0
   seamlessCubemap: 0
-  textureFormat: -2
-  maxTextureSize: 2048
+  textureFormat: -1
+  maxTextureSize: 512
   textureSettings:
     filterMode: 0
     aniso: 16
@@ -229,7 +232,7 @@ TextureImporter:
     - name: Goblin_Bow_Idle
       rect:
         serializedVersion: 2
-        x: 230
+        x: 226
         y: 270
         width: 54
         height: 242
@@ -239,7 +242,7 @@ TextureImporter:
     - name: Goblin_bow_ready
       rect:
         serializedVersion: 2
-        x: 285
+        x: 283
         y: 270
         width: 50
         height: 242
@@ -325,6 +328,36 @@ TextureImporter:
         height: 87
       alignment: 7
       pivot: {x: .5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Top
+      rect:
+        serializedVersion: 2
+        x: 285
+        y: 415
+        width: 48
+        height: 96
+      alignment: 9
+      pivot: {x: .100000001, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Bottom
+      rect:
+        serializedVersion: 2
+        x: 283
+        y: 272
+        width: 48
+        height: 96
+      alignment: 9
+      pivot: {x: .170000002, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Middle
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 364
+        width: 23
+        height: 56
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

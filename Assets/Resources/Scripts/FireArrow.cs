@@ -3,13 +3,31 @@ using System.Collections;
 
 public class FireArrow : MonoBehaviour {
 
-	AudioClip fireArrow;
+	static AudioClip fireArrow;
 	AudioSource audio;
-
+	internal float arrowSpeed = 25f;
+	internal PoseController pose;
+	private Animator animator;
 	// Use this for initialization
 	void Awake () {
-		fireArrow = Resources.Load<AudioClip>("Audio/BowDrawAndShoot");
+		animator = GetComponent<Animator>();
+		if (fireArrow == null)
+		{
+			fireArrow = Resources.Load<AudioClip>("Audio/BowDrawAndShoot");
+			BulletLife.LoadSprites("Sprites/Goblin");
+		}
+		Transform[] children = GetComponentsInChildren<Transform>();
+		childArrow = transform;
+		foreach (Transform child in children)
+		{
+			Transform parent = child.parent;
+			if (parent != null && parent.name.Contains("LeftHand"))
+			{
+				childArrow = child;
+			}
+		}
 		audio = GetComponent<AudioSource>();
+		pose = gameObject.GetComponent<PoseController>();
 	}
 	
 	// Update is called once per frame
@@ -19,17 +37,52 @@ public class FireArrow : MonoBehaviour {
 
 	private bool playingBowStretch;
 	private bool firing;
-	public void PlayBowStretch()
+	private Transform childArrow = null;
+
+
+	public void PlayBowStretch(int oclock)
 	{
-		//Debug.Log ("PLAYBOW");
+	
 		if (!playingBowStretch && fireArrow != null && fireArrow.isReadyToPlay && !audio.isPlaying)
 		{
-			playingBowStretch = true;
-			audio.PlayOneShot(fireArrow);
+
 			if (!firing)
 			{
 				firing = true;
-				StartCoroutine(Fire(0.2f, PlayerInfo.playerTransform,new DamageType(), 1f, new Vector2(-10f,10f), 20f, false, true));
+				/*
+				float aim = 6f * 5f * ((oclock / 100) - 9);
+
+				float sign = Mathf.Sign(transform.lossyScale.x);
+				float requiredAngle = pose.RequiredAngleToHitTarget(arrowSpeed);
+				float targetRelativeXSign = Mathf.Sign(transform.position.x - pose.target.position.x) * sign;
+				//float targetAngle = Vector2.Angle(Vector2.up, pose.target.position - transform.position) * -targetRelativeXSign;
+				float poseAngle = sign * ((transform.rotation.eulerAngles.z + aim) % 360);
+
+				if (targetRelativeXSign < 0)
+				{
+					pose.ChangeDirection();
+				}
+
+				while (Mathf.Abs(poseAngle) > 180f)
+				{
+					poseAngle += -360 * Mathf.Sign(poseAngle);
+				}
+
+				float finalAngle = poseAngle;
+				//bool abortShort = pose.AbortShot(poseAngle, requiredAngle, out finalAngle);
+				if (sign < 0)
+				{
+					finalAngle = 180f - finalAngle;
+				}
+				else
+				{
+					finalAngle = -finalAngle;
+				}
+				*/
+				playingBowStretch = true;
+				audio.PlayOneShot(fireArrow);
+				StartCoroutine(Fire(0.2f, pose.target, null, 1f, arrowSpeed, 20f, 3f, true));
+
 			}
 		}
 		else
@@ -40,11 +93,23 @@ public class FireArrow : MonoBehaviour {
 	}
 
 
-	public IEnumerator Fire(float delayBeforeFiring, Transform target, DamageType damageType, float mass, Vector2 velocity, float lifeSeconds, bool destroyOnImpact, bool stickOnImpact)
+	public IEnumerator Fire(float delayBeforeFiring, Transform target, DamageType damageType, float mass, float speed, float lifeSeconds, float destroyAfterImpactSeconds, bool stickOnImpact)
 	{
-		BulletLife bl = null;
+
 		yield return new WaitForSeconds(delayBeforeFiring);
-		GameObject arrow;
+		Vector3 position = childArrow.position;
+		float finalAngle = pose.lastRequiredAngle;
+		Vector3 scale = childArrow.lossyScale;
+		pose.firedArrow = true;
+
+		float sign = Mathf.Sign(transform.lossyScale.x);
+		if (sign < 0)
+		{
+			finalAngle =  finalAngle - 180f;
+			scale = new Vector3(-scale.x,scale.y,scale.z);
+		}
+
+		float rotation = finalAngle;
 
 		Transform[] children = GetComponentsInChildren<Transform>();
 		foreach (Transform child in children)
@@ -52,41 +117,30 @@ public class FireArrow : MonoBehaviour {
 			Transform parent = child.parent;
 			if (parent != null && parent.name.Contains("LeftHand"))
 			{
-
-				arrow = Instantiate(child.gameObject,child.position, child.rotation) as GameObject;
-				arrow.SetActive(true);
-				arrow.transform.localScale = child.lossyScale;
-				if (arrow.rigidbody2D == null)
-				{
-					Rigidbody2D r = arrow.AddComponent<Rigidbody2D>();
-				}
-				BoxCollider2D c = arrow.GetComponent<BoxCollider2D>();
-				if (c == null)
-				{
-					c = arrow.AddComponent<BoxCollider2D>();
-				}
-
-				SpriteRenderer sr = arrow.GetComponent<SpriteRenderer>();
-				if (sr != null)
-				{
-					sr.enabled = true;
-				}
-				bl = arrow.GetComponent<BulletLife>();
-				if (bl == null)
-				{
-					bl = arrow.AddComponent<BulletLife>();
-				}
-
-
+				BulletLife bl = BulletLife.CreateBullet("NonPlayerBullet",
+				                                        "NonPlayerBullets",
+				                                        position,
+				                                        rotation, 
+				                                        scale,
+				                                        "Goblin_arrow", 
+				                                        mass, 
+				                                        speed, 
+				                                        lifeSeconds, 
+				                                        Vector3.zero,
+				                                        1,
+				                                        0,
+				                                        null, 
+				                                        true,
+				                                        5f,
+				                                        "Character",
+				                                        0,
+				                                        1f,
+				                                        0
+				                                        );
 				break;
 			}
 		}
-		bl.mass = mass;
-		bl.destroyOnImpact = destroyOnImpact;
-		bl.damageType = damageType;
-		bl.totalLifeSeconds = lifeSeconds;
-		bl.velocity = velocity;
-		bl.stickOnImpact = true;
+
 
 		playingBowStretch = false;
 		firing = false;
