@@ -46,23 +46,26 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\DeleteMe.cs" />
-     <Compile Include="Assets\DrawGrid.cs" />
-     <Compile Include="Assets\IsGrounded.cs" />
-     <Compile Include="Assets\LevelManager.cs" />
-     <Compile Include="Assets\LockFootRotation.cs" />
-     <Compile Include="Assets\RandomOrientation.cs" />
      <Compile Include="Assets\Resources\Scripts\BulletLife.cs" />
      <Compile Include="Assets\Resources\Scripts\CameraFollow.cs" />
+     <Compile Include="Assets\Resources\Scripts\DeleteMe.cs" />
+     <Compile Include="Assets\Resources\Scripts\DrawGrid.cs" />
      <Compile Include="Assets\Resources\Scripts\FireArrow.cs" />
      <Compile Include="Assets\Resources\Scripts\FireBullet.cs" />
+     <Compile Include="Assets\Resources\Scripts\GameObjectUtils.cs" />
+     <Compile Include="Assets\Resources\Scripts\HumanoidInfo.cs" />
+     <Compile Include="Assets\Resources\Scripts\IsGrounded.cs" />
+     <Compile Include="Assets\Resources\Scripts\LevelManager.cs" />
+     <Compile Include="Assets\Resources\Scripts\LockFootRotation.cs" />
      <Compile Include="Assets\Resources\Scripts\Math3d.cs" />
      <Compile Include="Assets\Resources\Scripts\ParentAndConstraint.cs" />
      <Compile Include="Assets\Resources\Scripts\PlayerBody.cs" />
      <Compile Include="Assets\Resources\Scripts\PlayerInfo.cs" />
      <Compile Include="Assets\Resources\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Resources\Scripts\PoseController.cs" />
+     <Compile Include="Assets\Resources\Scripts\RandomOrientation.cs" />
      <Compile Include="Assets\Resources\Scripts\SimpleCCD.cs" />
+     <Compile Include="Assets\Resources\Scripts\WeaponAttach.cs" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\BlendOneOne.shader" />
      <None Include="Assets\Standard Assets (Mobile)\Shaders\Particle Shaders\Mobile Multiply Culled.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\NoiseEffectShaderRGB.shader" />

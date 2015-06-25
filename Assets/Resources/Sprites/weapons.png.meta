@@ -1,0 +1,124 @@
+fileFormatVersion: 2
+guid: 6d86e4b71953e4ad8b514f09a3871c54
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Bow_Curved_1
+    21300002: Bow_Long_1
+    21300004: Bow_Long_String_1
+    21300006: Bow_Curved_String_1
+    21300008: ArrowHead_1
+    21300010: Arrow_Shaft
+    21300012: Arrow_Fletching_1
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 512
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Bow_Curved_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 452
+        width: 22
+        height: 60
+      alignment: 9
+      pivot: {x: .240618691, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Long_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 370
+        width: 24
+        height: 81
+      alignment: 9
+      pivot: {x: .100000001, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Long_String_1
+      rect:
+        serializedVersion: 2
+        x: 25
+        y: 370
+        width: 1
+        height: 81
+      alignment: 2
+      pivot: {x: .5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Bow_Curved_String_1
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 452
+        width: 1
+        height: 60
+      alignment: 2
+      pivot: {x: .5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: ArrowHead_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 360
+        width: 10
+        height: 7
+      alignment: 5
+      pivot: {x: 1, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Arrow_Shaft
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 362
+        width: 1
+        height: 3
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Arrow_Fletching_1
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 358
+        width: 16
+        height: 11
+      alignment: 5
+      pivot: {x: 1, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
