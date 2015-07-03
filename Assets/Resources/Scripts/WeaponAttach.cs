@@ -19,13 +19,14 @@ public class WeaponAttach : MonoBehaviour {
 	}
 
 	// targetting type
-	public bool hasBallisticTargetting = false;
+	public float hasBallisticTargettingAboveDistanceSquared = 1000f;
+	public float maxRangeSquared = 2500f;
 	public float missileSpeed = 20f;
 	public bool parentPivotToHigherWeightParent = true;
 	public Transform target;
 	public float trackingTimeDelay = 0.1f;
 	public bool trackTarget = true;
-	public float predictiveLeadSeconds = 1f;
+	public float predictiveLeadSeconds = 0.1f;
 
 
 	// aiming pivot for IK hand placement
@@ -45,7 +46,6 @@ public class WeaponAttach : MonoBehaviour {
 	public float pivotLengthExtentsProportion = 1f;
 	public float pivotLength { get; private set;}
 
-	public Transform TempTestDeleteMeAttachTo;
 	private SimpleCCD simpleCCD;
 
 	// private
@@ -120,7 +120,11 @@ public class WeaponAttach : MonoBehaviour {
 	{
 		get
 		{
-			return track2 + (track2-track1)*(predictiveLeadSeconds/trackingTimeDelay);
+			float diffMultiplier = predictiveLeadSeconds/trackingTimeDelay;
+
+			Vector3 newTarget = track2 + (track2 - track1)  * diffMultiplier;
+			TestSprite.testSprite.position = newTarget;
+			return newTarget;
 		}
 		
 	}
@@ -202,12 +206,13 @@ public class WeaponAttach : MonoBehaviour {
 		{
 			Attach (humanoidInfo.transform);
 		}
-		else if (TempTestDeleteMeAttachTo != null)
+		else if (PJCREMOVEAttachTo)
 		{
-			Attach(TempTestDeleteMeAttachTo);
+			Attach(PJCREMOVEAttachTo);
 		}
 	}
 
+	public Transform PJCREMOVEAttachTo;
 	private Transform root;
 
 	private bool IsNegativeX
@@ -218,6 +223,7 @@ public class WeaponAttach : MonoBehaviour {
 		}
 	}
 
+	private bool atAttachTimeWasNegative;
 	public void Attach(Transform attachTo)
 	{
 		if (attachTo == null || attachTo.root == transform)
@@ -274,10 +280,13 @@ public class WeaponAttach : MonoBehaviour {
 		}
 		weight1 = weight1?? weight2;
 		weight2 = weight2?? weight1;
+		atAttachTimeWasNegative = IsNegativeX;
 		if (weight1 != null)
 		{
 			weaponPivotStart = (new GameObject("WeaponPivotStart")).transform;
 			weaponPivotStart.position = weight1.position * pivotWeight1Proportion + weight2.position * (1f - pivotWeight1Proportion);
+			weaponPivotStart.localRotation = Quaternion.identity;
+
 			if (parentPivotToHigherWeightParent && pivotWeight1Proportion >= 0.5f)
 			{
 				weaponPivotStart.parent = weight1.parent;
@@ -291,7 +300,9 @@ public class WeaponAttach : MonoBehaviour {
 			weaponPivotEnd = (new GameObject("WeaponPivotEnd")).transform;
 			weaponPivotEnd.parent = weaponPivotStart;
 			weaponPivotEnd.localScale = Vector3.one;
-			weaponPivotEnd.localPosition = weaponPivotStart.TransformVector(new Vector3(-pivotLength,0,0));
+			weaponPivotEnd.localPosition = weaponPivotStart.TransformVector(new Vector3(atAttachTimeWasNegative?-pivotLength:pivotLength,0,0));
+
+			weaponPivotEnd.rotation = Quaternion.identity;
 		}
 		if (attachPoint)
 		{
@@ -343,36 +354,41 @@ public class WeaponAttach : MonoBehaviour {
 	private float lastGoodAngle;
 	IEnumerator TrackTarget(float delay)
 	{
-		//yield return new WaitForSeconds(delay);
+		yield return new WaitForSeconds(delay);
 		if (target != null)
 		{
 			track2 = target.position;
 			if (pivotEndTarget != PivotEndTarget.None)
 			{
-				float absAngle = RequiredAngleToHitTarget();
-				if (float.IsNaN(absAngle))
+				float? absAng = RequiredAngleToHitTarget();
+				if (absAng.HasValue)
 				{
-					absAngle = lastGoodAngle;
-				}
-				lastGoodAngle = absAngle;
-				weaponPivotStart.eulerAngles = new Vector3(0,0,absAngle);
+					float absAngle = absAng.GetValueOrDefault();
+					if (float.IsNaN(absAngle))
+					{
+						absAngle = lastGoodAngle;
+					}
+					lastGoodAngle = absAngle;
 
-				switch (pivotEndTarget)
-				{
-				case PivotEndTarget.LeftHand:
-					actualIKLeftHandTarget.position = weaponPivotEnd.position;
+					weaponPivotStart.eulerAngles = new Vector3(0,0,absAngle);
 
-					break;
-				case PivotEndTarget.LeftFoot:
-					actualIKLeftFootTarget.position = weaponPivotEnd.position;
-					break;
-				case PivotEndTarget.RightHand:
-					actualIKRightHandTarget.position = weaponPivotEnd.position;
-					break;
-				case PivotEndTarget.RightFoot:
-					actualIKRightFootTarget.position = weaponPivotEnd.position;
-					break;
+					switch (pivotEndTarget)
+					{
+					case PivotEndTarget.LeftHand:
+						actualIKLeftHandTarget.position = weaponPivotEnd.position;
 
+						break;
+					case PivotEndTarget.LeftFoot:
+						actualIKLeftFootTarget.position = weaponPivotEnd.position;
+						break;
+					case PivotEndTarget.RightHand:
+						actualIKRightHandTarget.position = weaponPivotEnd.position;
+						break;
+					case PivotEndTarget.RightFoot:
+						actualIKRightFootTarget.position = weaponPivotEnd.position;
+						break;
+
+					}
 				}
 			}
 			tracking = false;
@@ -381,21 +397,39 @@ public class WeaponAttach : MonoBehaviour {
 		yield return null;
 	}
 
-	internal float RequiredAngleToHitTarget()
+	internal float? RequiredAngleToHitTarget()
 	{
 		Vector3 targetPos = finalTarget;
 		bool isNeg = IsNegativeX;
 		float x = targetPos.x - weaponPivotStart.position.x;
 		float y = targetPos.y - weaponPivotStart.position.y;
-		
-		float speedSquared = missileSpeed * missileSpeed;
-		float grav = LevelManager.levelGravity;
-		float underRoot = Mathf.Sqrt(speedSquared * speedSquared - (grav * (grav*x*x + 2*y*speedSquared)));
-		float toArcTan = (speedSquared - underRoot) / (grav*x);
-		float final = Mathf.Atan(toArcTan) * Mathf.Rad2Deg;
+		float? final = null;
+		float distSquared = x*x + y*y;
+		if (distSquared < maxRangeSquared)
+		{
+			if (distSquared > hasBallisticTargettingAboveDistanceSquared)
+			{
+				float speedSquared = missileSpeed * missileSpeed;
+				float grav = LevelManager.levelGravity;
+				float underRoot = FastMath.Sqrt(speedSquared * speedSquared - (grav * (grav*x*x + 2*y*speedSquared)));
 
-		final = IsNegativeX ? 180f-final: final;
-
+				if (isNeg)
+				{
+					final = (FastMath.Atan2((speedSquared - underRoot), (grav*-x)) * Mathf.Rad2Deg) + 2*transform.root.eulerAngles.z;
+				}
+				else
+				{
+					final = (FastMath.Atan2((speedSquared - underRoot), (grav*x)) * Mathf.Rad2Deg);
+				}
+			}
+			else
+			{
+				Vector3 dir = new Vector3(x,y,0);
+				final = FastMath.Atan2(dir.y,dir.x) * Mathf.Rad2Deg;
+				//transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+				Debug.Log("NON BALISTIC "+final.GetValueOrDefault());
+			}
+		}
 		return final;
 	}
 }
