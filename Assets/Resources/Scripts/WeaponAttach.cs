@@ -79,38 +79,19 @@ public class WeaponAttach : MonoBehaviour {
 	private Transform actualIKRightFootTarget;
 	private Transform actualIKLeftFootTarget;
 
-
-	private bool hasRightHandSlide;
-	private bool hasLeftHandSlide;
-	private float _rightHandSlide;
-	private float rightHandSlide
+	private float slide = 0;
+	public float Slide
 	{
 		get
 		{
-			return _rightHandSlide;
+			return slide;
 		}
 		set
 		{
-			_rightHandSlide = Mathf.Clamp01(value);
-			if (hasRightHandSlide)
+			slide = Mathf.Clamp01(value);
+			if (simpleCCD)
 			{
-				simpleCCD.slide = _rightHandSlide;
-			}
-		}
-	}
-	private float _leftHandSlide;
-	private float leftHandSlide
-	{
-		get
-		{
-			return _leftHandSlide;
-		}
-		set
-		{
-			_leftHandSlide = Mathf.Clamp01(value);
-			if (hasLeftHandSlide)
-			{
-				simpleCCD.slide = _leftHandSlide;
+				simpleCCD.slide = slide;
 			}
 		}
 	}
@@ -427,7 +408,6 @@ public class WeaponAttach : MonoBehaviour {
 				Vector3 dir = new Vector3(x,y,0);
 				final = FastMath.Atan2(dir.y,dir.x) * Mathf.Rad2Deg;
 				//transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-				Debug.Log("NON BALISTIC "+final.GetValueOrDefault());
 			}
 		}
 		return final;

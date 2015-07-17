@@ -1,23 +1,23 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Resources/Scripts/WeaponAttach.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Resources/Scripts/ParentAndConstraint.cs">
     <Files>
       <File FileName="Assets/Resources/Scripts/HumanoidInfo.cs" Line="1" Column="1" />
       <File FileName="Assets/Editor/SimpleCCDEditor.cs" Line="1" Column="1" />
       <File FileName="Assets/Resources/Scripts/SimpleCCD.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/WeaponAttach.cs" Line="211" Column="30" />
+      <File FileName="Assets/Resources/Scripts/WeaponAttach.cs" Line="95" Column="5" />
       <File FileName="Assets/Resources/Scripts/GameObjectUtils.cs" Line="1" Column="1" />
       <File FileName="Assets/Resources/Scripts/PoseController.cs" Line="1" Column="1" />
       <File FileName="Assets/Resources/Scripts/PlayerInfo.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/FireArrow.cs" Line="120" Column="5" />
-      <File FileName="Assets/NormalClasses/FastMath.cs" Line="92" Column="26" />
-      <File FileName="Assets/Resources/Scripts/BulletLife.cs" Line="282" Column="1" />
+      <File FileName="Assets/Resources/Scripts/FireArrow.cs" Line="1" Column="1" />
+      <File FileName="Assets/NormalClasses/FastMath.cs" Line="1" Column="1" />
+      <File FileName="Assets/Resources/Scripts/BulletLife.cs" Line="1" Column="1" />
+      <File FileName="Assets/Resources/Scripts/RotateUncle.cs" Line="41" Column="28" />
+      <File FileName="Assets/Resources/Scripts/ParentAndConstraint.cs" Line="38" Column="68" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="/Users/Peter/Valinor/Assets/Resources/Scripts/WeaponAttach.cs" line="363" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

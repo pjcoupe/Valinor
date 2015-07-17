@@ -65,6 +65,7 @@
      <Compile Include="Assets\Resources\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Resources\Scripts\PoseController.cs" />
      <Compile Include="Assets\Resources\Scripts\RandomOrientation.cs" />
+     <Compile Include="Assets\Resources\Scripts\RotateUncle.cs" />
      <Compile Include="Assets\Resources\Scripts\SimpleCCD.cs" />
      <Compile Include="Assets\Resources\Scripts\TestSprite.cs" />
      <Compile Include="Assets\Resources\Scripts\WeaponAttach.cs" />
