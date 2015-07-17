@@ -9,6 +9,13 @@ public class ParentAndConstraint : MonoBehaviour {
 	public bool LockYAxis = false;
 	public Transform RelativeParentTo;
 	private bool inited = false;
+	private Vector3 lastLocalRotation = Vector3.zero;
+	private Transform[] parentOrUncle;
+
+	void Awake()
+	{
+		lastLocalRotation = transform.localEulerAngles;		
+	}
 
 	// Use this for initialization
 	void Start () 
@@ -18,6 +25,12 @@ public class ParentAndConstraint : MonoBehaviour {
 			inited = true;
 			lastLocalPosition = transform.localPosition;
 		}
+		int parentOrUncleCount = transform.parent.parent.childCount;
+		parentOrUncle = new Transform[parentOrUncleCount];
+		for (int i=0; i < parentOrUncleCount; i++)
+		{
+			parentOrUncle[i] = transform.parent.parent.GetChild(i);
+		}
 	}
 
 	private Vector3 lastLocalPosition;
@@ -26,29 +39,26 @@ public class ParentAndConstraint : MonoBehaviour {
 		if (!Application.isPlaying)
 			Start();
 
-		if (lastLocalPosition == transform.localPosition)
+		if (lastLocalPosition != transform.localPosition)
 		{
-			return;
+			Vector3 delta = transform.localPosition - lastLocalPosition;
+			lastLocalPosition = transform.localPosition;
+			delta = new Vector3(LockXAxis ? 0 : delta.x, LockYAxis ? 0 : delta.y, delta.z);
+			Vector3 transformed = RelativeParentTo.TransformDirection(delta);
+			RelativeParentTo.localPosition += transformed;
 		}
-		Vector3 delta = transform.localPosition - lastLocalPosition;
-		lastLocalPosition = transform.localPosition;
-		delta = new Vector3(LockXAxis ? 0 : delta.x, LockYAxis ? 0 : delta.y, delta.z);
 
 
-		Vector3 transformed = RelativeParentTo.TransformDirection(delta);
-		RelativeParentTo.localPosition += transformed;
-		/*
-		float deltaX = (ConstrainXAxis ? 0 : transform.localPosition.x) - lastLocalPosition.x;
-		float deltaY = (ConstrainYAxis ? 0 : transform.localPosition.y) - lastLocalPosition.y;
-
-		Vector3 delta = new Vector3(deltaX, deltaY, 0);
-		lastLocalPosition += delta;
-
-		if (RelativeParentTo != null)
+		Vector3 locRot = transform.localEulerAngles;
+		
+		if (lastLocalRotation != locRot)
 		{
-			Debug.Log("Changing "+RelativeParentTo.name + " to "+delta);
-			RelativeParentTo.localPosition += delta;
+			lastLocalRotation = locRot;
+
+			foreach (Transform t in parentOrUncle)
+			{
+				t.localEulerAngles = locRot;
+			}
 		}
-		*/
 	}
 }
