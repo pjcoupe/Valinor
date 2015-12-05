@@ -391,22 +391,22 @@ public class WeaponAttach : MonoBehaviour {
 			if (distSquared > hasBallisticTargettingAboveDistanceSquared)
 			{
 				float speedSquared = missileSpeed * missileSpeed;
-				float grav = LevelManager.levelGravity;
-				float underRoot = FastMath.Sqrt(speedSquared * speedSquared - (grav * (grav*x*x + 2*y*speedSquared)));
+				float grav = LevelManager.levelGravityMagnitude;
+				float underRoot = Mathf.Sqrt(speedSquared * speedSquared - (grav * (grav*x*x + 2*y*speedSquared)));
 
 				if (isNeg)
 				{
-					final = (FastMath.Atan2((speedSquared - underRoot), (grav*-x)) * Mathf.Rad2Deg) + 2*transform.root.eulerAngles.z;
+					final = (Mathf.Atan2((speedSquared - underRoot), (grav*-x)) * Mathf.Rad2Deg) + 2*transform.root.eulerAngles.z;
 				}
 				else
 				{
-					final = (FastMath.Atan2((speedSquared - underRoot), (grav*x)) * Mathf.Rad2Deg);
+					final = (Mathf.Atan2((speedSquared - underRoot), (grav*x)) * Mathf.Rad2Deg);
 				}
 			}
 			else
 			{
 				Vector3 dir = new Vector3(x,y,0);
-				final = FastMath.Atan2(dir.y,dir.x) * Mathf.Rad2Deg;
+				final = Mathf.Atan2(dir.y,dir.x) * Mathf.Rad2Deg;
 				//transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 			}
 		}

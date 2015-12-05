@@ -4,7 +4,7 @@ using System.Collections;
 public class FireArrow : MonoBehaviour {
 
 	static AudioClip fireArrow;
-	AudioSource audio;
+	AudioSource Audio;
 	internal float arrowSpeed = 25f;
 	internal PoseController pose;
 	private Animator animator;
@@ -26,7 +26,7 @@ public class FireArrow : MonoBehaviour {
 				childArrow = child;
 			}
 		}
-		audio = GetComponent<AudioSource>();
+		Audio = GetComponent<AudioSource>();
 		pose = gameObject.GetComponent<PoseController>();
 	}
 	
@@ -43,7 +43,7 @@ public class FireArrow : MonoBehaviour {
 	public void PlayBowStretch(int oclock)
 	{
 	
-		if (!playingBowStretch && fireArrow != null && fireArrow.isReadyToPlay && !audio.isPlaying)
+		if (!playingBowStretch && fireArrow != null && fireArrow.loadState == AudioDataLoadState.Loaded && !Audio.isPlaying)
 		{
 
 			if (!firing)
@@ -80,7 +80,7 @@ public class FireArrow : MonoBehaviour {
 				}
 				*/
 				playingBowStretch = true;
-				audio.PlayOneShot(fireArrow);
+				Audio.PlayOneShot(fireArrow);
 				StartCoroutine(Fire(0.2f, pose.target, null, 1f, arrowSpeed, 20f, 3f, true));
 
 			}

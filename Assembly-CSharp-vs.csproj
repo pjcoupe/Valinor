@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\DistanceTool\DistanceTool.cs" />
      <Compile Include="Assets\NormalClasses\FastMath.cs" />
      <Compile Include="Assets\Resources\Scripts\BulletLife.cs" />
      <Compile Include="Assets\Resources\Scripts\CameraFollow.cs" />
@@ -54,7 +55,9 @@
      <Compile Include="Assets\Resources\Scripts\FireArrow.cs" />
      <Compile Include="Assets\Resources\Scripts\FireBullet.cs" />
      <Compile Include="Assets\Resources\Scripts\GameObjectUtils.cs" />
+     <Compile Include="Assets\Resources\Scripts\HeadSimpleCCD.cs" />
      <Compile Include="Assets\Resources\Scripts\HumanoidInfo.cs" />
+     <Compile Include="Assets\Resources\Scripts\IKInfo.cs" />
      <Compile Include="Assets\Resources\Scripts\IsGrounded.cs" />
      <Compile Include="Assets\Resources\Scripts\LevelManager.cs" />
      <Compile Include="Assets\Resources\Scripts\LockFootRotation.cs" />
@@ -64,6 +67,7 @@
      <Compile Include="Assets\Resources\Scripts\PlayerInfo.cs" />
      <Compile Include="Assets\Resources\Scripts\PlayerMovement.cs" />
      <Compile Include="Assets\Resources\Scripts\PoseController.cs" />
+     <Compile Include="Assets\Resources\Scripts\PositionOrRotateOther.cs" />
      <Compile Include="Assets\Resources\Scripts\RandomOrientation.cs" />
      <Compile Include="Assets\Resources\Scripts\RotateUncle.cs" />
      <Compile Include="Assets\Resources\Scripts\SimpleCCD.cs" />
@@ -121,6 +125,7 @@
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\CameraMotionBlurDX11.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\SeparableBlurPlus.shader" />
      <None Include="Assets\Resources\Shaders\MobileTexture.shader" />
+     <None Include="Assets\DistanceTool\READ ME.txt" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\_BloomAndFlares\MultiPassHollywoodFlares.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\BlurEffectConeTaps.shader" />
      <None Include="Assets\Standard Assets\Image Effects (Pro Only)\_Sources\Shaders\CameraMotionBlur.shader" />

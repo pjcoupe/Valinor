@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+
 internal struct SecondJointRelLengthAndDistance
 {
 	public int secondJointRelLengthTimes100;
@@ -14,17 +15,22 @@ internal struct SecondJointRelLengthAndDistance
 public class SimpleCCD : MonoBehaviour
 {
 	private int iterations = 5;
-	
-	[Range(0.01f, 1)]
-	public float damping = 1;
+
+	[Range(0f, 1f)]
+	public float targetProportion = 1;
+
+	public int rotationParents = 0;
 	public float rotationOffset = 0;
-	public bool isFoot = false;
 	public bool iterationMethod = false;
+	public bool isFoot = false;
 	public static bool muteAll = false;
 	public Transform target;
+	public Transform alternateTarget;
 	public Transform targetMax;
 	public Transform endTransform;
 	public bool restoreDefaults = false;
+	private Transform root;
+
 
 
 	private static List<SecondJointRelLengthAndDistance> jointCache;
@@ -121,11 +127,11 @@ public class SimpleCCD : MonoBehaviour
 
 	void OnValidate()
 	{
-		// min & max has to be between 0 ... 360
+		// min & max has to be between -180 ... 180
 		foreach (var node in angleLimits)
 		{
-			node.min = Mathf.Clamp (node.min,0, 360);
-			node.max = Mathf.Clamp (node.max,0, 360);
+			node.min = Mathf.Clamp (node.min,-180, 180);
+			node.max = Mathf.Clamp (node.max,-180, 180);
 		}
 	}
 
@@ -135,16 +141,19 @@ public class SimpleCCD : MonoBehaviour
 	private LockFootRotation lockEndTransformRotation = null;
 	private float endNodeDistance, firstNodeDistance;
 	private SecondJointRelLengthAndDistance myJoint;
-	private Transform rotatorAndReverser = null;
+	private HumanoidInfo humanoidInfo = null;
 	public Transform mirrorYEndTransform;
+
 
 	void Start()
 	{
-		rotatorAndReverser = transform.root;
-		/*while (rotatorAndReverser != null && rotatorAndReverser.parent != transform.root)
+		root = transform.root;
+		humanoidInfo = root.GetComponent<HumanoidInfo>();	
+
+		if (endTransform == null)
 		{
-			rotatorAndReverser = rotatorAndReverser.parent;
-		}*/
+			return;
+		}
 
 		// Cache optimization
 		nodeCache = new Dictionary<Transform, Node>(angleLimits.Length);
@@ -158,7 +167,6 @@ public class SimpleCCD : MonoBehaviour
 		lockEndTransformRotation = target.gameObject.GetComponent<LockFootRotation>();
 
 
-
 		Transform node = endTransform.parent;
 		float scaleF = Mathf.Abs(transform.root.localScale.x);
 		endNodeDistance = endTransform.localPosition.magnitude * scaleF;
@@ -166,7 +174,7 @@ public class SimpleCCD : MonoBehaviour
 		maxDistance = endNodeDistance;
 		while (true)
 		{
-			if (node == transform)
+			if (node == null || node == transform)
 				break;
 			firstNodeDistance = node.localPosition.magnitude * scaleF;
 			maxDistance += firstNodeDistance;
@@ -189,25 +197,117 @@ public class SimpleCCD : MonoBehaviour
 
 	public Vector3 currentTargetPosition { get; private set; }
 
+
+	private void CalculateBendAngle(float dist, float signedAngle)
+	{	
+		Transform child = endTransform.parent;
+		float direction = humanoidInfo.Direction;
+		float a2, b2, abTimes2, a2Plusb2, a2Minusb2, d2, maxMinusMinDist, cosD, cosB, B, D;
+		a2 = firstNodeDistance * firstNodeDistance;
+		b2 = endNodeDistance * endNodeDistance;
+		abTimes2 = 2f * firstNodeDistance * endNodeDistance;
+		a2Plusb2 = a2 + b2;
+		a2Minusb2 = a2 - b2;
+
+		maxMinusMinDist = maxDistance - minDistance;
+
+		d2 = dist * dist;
+		cosB = (a2Minusb2 + d2) / (2f * firstNodeDistance*dist);
+		cosD = (a2Plusb2 - d2) / abTimes2;
+
+		B = Mathf.Acos(cosB) * Mathf.Rad2Deg;
+		D = Mathf.Acos(cosD) * Mathf.Rad2Deg;
+
+		float rootEulerZ = root.eulerAngles.z;
+		float eulerZ, childEulerZ;
+
+		if (isFoot)
+		{
+			if (humanoidInfo.Direction > 0)
+			{
+				eulerZ = -rootEulerZ -B - (direction * signedAngle);
+				childEulerZ = 180f - D;
+			}
+			else
+			{
+				eulerZ = rootEulerZ -B - (direction * signedAngle);
+				childEulerZ = 180f - D;
+			}
+		}
+		else
+		{
+			if (humanoidInfo.Direction > 0)
+			{
+				eulerZ = -rootEulerZ +B - (direction * signedAngle);
+				childEulerZ = 180f + D;
+			}
+			else
+			{
+
+				eulerZ = rootEulerZ +B - (direction * signedAngle);
+				childEulerZ = 180f + D;
+			}
+		}
+		if (Mathf.Abs(childEulerZ) > 180f)
+		{
+			childEulerZ -= 360f * Mathf.Sign(childEulerZ);
+		}
+		if (Mathf.Abs(eulerZ) > 180f)
+		{
+			eulerZ -= 360f * Mathf.Sign(eulerZ);
+
+		}
+		Node limit;		
+		if (nodeCache.TryGetValue(transform, out limit))
+		{
+			eulerZ = Mathf.Clamp(eulerZ, limit.min, limit.max);
+		}
+		if (nodeCache.TryGetValue(child, out limit))
+		{
+			childEulerZ = Mathf.Clamp(childEulerZ, limit.min, limit.max);
+		}
+
+		transform.localEulerAngles = new Vector3(0, 0, eulerZ);
+		child.localEulerAngles = new Vector3(0,0, childEulerZ);
+
+    }
     void LateUpdate()
     {
 
-        if (muteAll || target == null || endTransform == null)
+        if (muteAll || (target == null && alternateTarget == null) || endTransform == null)
 			return;
 
 		if (!Application.isPlaying)
 			Start();
 
-		currentTargetPosition = targetMax? Vector3.Lerp(target.position, targetMax.position, slide):target.position;
+		Vector3 targetPosition;
+		Vector3 t1 = target == null ? alternateTarget.position : target.position;
+		Vector3 t2 = alternateTarget == null ? target.position : alternateTarget.position;
+		targetPosition = Vector3.Lerp(t2,t1, targetProportion);
+
+		currentTargetPosition = targetMax? Vector3.Lerp(targetPosition, targetMax.position, slide):targetPosition;
 		Vector3 currentTransformPosition = transform.position;
 		if (currentTargetPosition == lastTargetPosition && lastTransformPosition == currentTransformPosition)
 		{
+			/*
+			if (transform.name == "IK_Neck_Top")
+			{
+				Debug.Log(transform.name+" target same");
+			}
+			*/
 			return;
 		}
 		lastTargetPosition = currentTargetPosition;
 		lastTransformPosition = currentTransformPosition;
 		Vector3 dist = currentTransformPosition - currentTargetPosition;
 		float distMagnitude = dist.magnitude;
+
+		if (humanoidInfo != null && !iterationMethod)
+		{
+			CalculateBendAngle(Mathf.Clamp(distMagnitude, minDistance,maxDistance), SignedAngle(Vector3.up, dist));
+			return; 
+		}
+
 		if (distMagnitude > maxDistance)
 		{
 			dist = Vector3.ClampMagnitude(dist, maxDistance);
@@ -220,97 +320,15 @@ public class SimpleCCD : MonoBehaviour
 		}
 		TargetPosition = currentTransformPosition - dist;
 
-		if (iterationMethod)
+
+		int i = 0;
+
+		while (i < iterations)
 		{
-			int i = 0;
-			//TargetPosition = currentTransformPosition - dist;
-
-			while (i < iterations)
-			{
-				CalculateIK();
-				i++;
-			}
-			//Debug.Log("AFTER "+transform.name + "rot ="+transform.localEulerAngles);
+			CalculateIK();
+			i++;
 		}
-		else
-		{
-			float rootYRot = Mathf.Sign(rotatorAndReverser.localScale.x);
-			float distFloat = Mathf.Min (100f, 100f * (distMagnitude - minDistance) / distanceSpread);
-			int distFloor = (int)Mathf.Floor(distFloat);
-			int distCeil = (int)Mathf.Ceil(distFloat);
-			distFloat -= distFloor;
 
-			float signedAngle = Vector3.Angle (Vector2.up, dist);
-			float signX = Mathf.Sign(dist.x);
-			float signY = Mathf.Sign(dist.y);
-
-			if (signX < 0)
-			{
-				signedAngle = -signedAngle;
-			}
-
-			float angle = rootYRot < 0 ? signedAngle + transform.parent.eulerAngles.z * rootYRot + 2* transform.root.eulerAngles.z
-									   : signedAngle + transform.parent.eulerAngles.z;
-
-			myJoint.lastLevelUsed = LevelManager.currentLevel;
-			Vector2 angles;
-			if (distFloor == distCeil)
-			{
-				angles = myJoint.cachedRotations[(byte)distFloor];
-				lastDistCeil = distCeil;
-				hiAngle = myJoint.cachedRotations[(byte)lastDistCeil];
-				lastDistFloor = distFloor;
-				lowAngle = myJoint.cachedRotations[(byte)lastDistFloor];
-			}
-			else
-			{
-				if (lastDistCeil != distCeil)
-				{
-					lastDistCeil = distCeil;
-					hiAngle = myJoint.cachedRotations[(byte)lastDistCeil];
-				}
-				if (lastDistFloor != distFloor)
-				{
-					lastDistFloor = distFloor;
-					lowAngle = myJoint.cachedRotations[(byte)lastDistFloor];
-				}
-				angles = new Vector2(Mathf.LerpAngle(lowAngle.x,hiAngle.x,distFloat), Mathf.LerpAngle(lowAngle.y, hiAngle.y,distFloat));
-			}
-			float mainAngle, childAngle;
-			if (isFoot)
-			{
-				if (rootYRot == 1f)
-				{
-					mainAngle = -angle - angles.x;
-					childAngle = -180f - angles.y;
-				}
-				else
-				{
-					mainAngle = angle - angles.x;
-					childAngle = 180f - angles.y;
-				}
-			}
-			else
-			{
-				if (rootYRot == 1f)
-				{
-					mainAngle = -angle + angles.x;
-					childAngle = 180f + angles.y;
-				}
-				else
-				{		
-					mainAngle = angle + angles.x;
-					childAngle = -180f + angles.y;
-				}
-			}
-			float mainPlusOffset = mainAngle + rotationOffset;
-			if (!float.IsNaN(childAngle) && !float.IsNaN(mainPlusOffset))
-			{
-				transform.localEulerAngles = new Vector3(0,0, mainPlusOffset);
-				endTransform.parent.localEulerAngles = new Vector3(0,0, childAngle);
-			}
-
-		}
 
 		if (lockEndTransformRotation != null && lockEndTransformRotation.jointToLock != null)
 		{
@@ -318,20 +336,33 @@ public class SimpleCCD : MonoBehaviour
 		}
 	}
 
+	private Vector3 saveTransformPos, saveEndTransformPos;
+	private Vector3 saveTargetPos;
 	void CalculateIK()
 	{		
+
 		Transform nodeMirror;
 		Transform node = endTransform.parent;
-		float signAndDamping =  Mathf.Sign(rotatorAndReverser.localScale.x) * damping;
+		float direction;
+		if (humanoidInfo != null)
+		{
+			direction = humanoidInfo.Direction;
+		}
+		else
+		{
+			direction = Mathf.Sign(transform.root.localScale.x);
+		}
+		float changedAngle = 0;
 		while (true)
 		{
-			RotateTowardsTarget (signAndDamping, node);
+			changedAngle = RotateTowardsTarget (direction, node);
 
 			if (node == transform)
 				break;
 
 			node = node.parent;
 		}
+	
 		if (mirrorYEndTransform != null)
 		{
 			nodeMirror = mirrorYEndTransform;
@@ -351,9 +382,14 @@ public class SimpleCCD : MonoBehaviour
 				
 			}
 		}
+		saveTransformPos = transform.position;
+		saveEndTransformPos = endTransform.position;
+		saveTargetPos = target.position;
+
 	}
 
 	private Vector3 _targetPosition;
+	
 	private Vector3 TargetPosition 
 	{ 
 		get
@@ -371,34 +407,43 @@ public class SimpleCCD : MonoBehaviour
 		}
 	}
 	
-	void RotateTowardsTarget(float signAndDamping, Transform transform)
+	float RotateTowardsTarget(float signAndDamping, Transform transform)
 	{		
 		Vector2 toTarget = TargetPosition - transform.position;
 		Vector2 toEnd = endTransform.position - transform.position;
 		
 		// Calculate how much we should rotate to get to the target
 		float angle = -((SignedAngle(toEnd, toTarget) * signAndDamping) - transform.eulerAngles.z);
-		
+		angle = (angle + rotationOffset) % 360;
+		float changeAngle = (angle - transform.eulerAngles.z) % 360;
+	    transform.eulerAngles = new Vector3(0, 0, angle);
+
 		// Take care of angle limits 
 		if (nodeCache.ContainsKey(transform))
 		{
 			// Clamp angle in local space
 			var node = nodeCache[transform];
-			float parentRotation = transform.parent ? transform.parent.eulerAngles.z : 0;
-			angle -= parentRotation;
-			if (lockEndTransformRotation != null && transform == lockEndTransformRotation.jointToLock)
+			float localZ = transform.localEulerAngles.z;
+			if (localZ > 180)
 			{
-				angle = ClampAngle(angle, lockEndTransformRotation.angle, lockEndTransformRotation.angle);
+				localZ -= 360;
 			}
-			else
+			/*
+			if (transform.name == "IK_Neck_Top")
 			{
-				angle = ClampAngle(angle, node.min, node.max);
+				Debug.Log(transform.name+" localZ" + localZ + " localEul "+transform.localEulerAngles.z+" nodemin="+node.min+" nodemax="+node.max);
 			}
-
-			angle += parentRotation;
+			*/
+			if (localZ < node.min)
+			{
+				transform.localEulerAngles = new Vector3(0,0,node.min);
+			}
+			else if (localZ > node.max)
+			{
+				transform.localEulerAngles = new Vector3(0,0,node.max);
+			}
 		}
-		angle = angle % 360;
-		transform.eulerAngles = new Vector3(0, 0, angle);
+		return changeAngle;
 	}
 	
 	public static float SignedAngle (Vector3 a, Vector3 b)

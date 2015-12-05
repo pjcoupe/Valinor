@@ -126,9 +126,9 @@ public class BulletLife : MonoBehaviour {
 	Vector2 lastVel;
 	void FixedUpdate()
 	{
-		if (rigidbody2D != null)
+		if (GetComponent<Rigidbody2D>() != null)
 		{
-			Vector2 vel = rigidbody2D.velocity;
+			Vector2 vel = GetComponent<Rigidbody2D>().velocity;
 			bool updateAngle = Mathf.Sign(vel.x) != Mathf.Sign(lastVel.x) || Mathf.Sign(vel.y) != Mathf.Sign(lastVel.y) || updateDirCounter == 0;
 			updateDirCounter = (updateDirCounter + 1) % 5;
 			//Debug.Log ("Update bullet direction "+updateAngle);
@@ -172,7 +172,7 @@ public class BulletLife : MonoBehaviour {
 			}
 			if (stickOnImpact && coll.transform.name != "Pack")
 			{
-				float size = gameObject.collider2D.bounds.size.x * -0.5f;
+				float size = gameObject.GetComponent<Collider2D>().bounds.size.x * -0.5f;
 				transform.position += transform.right  * size;
 
 				Transform p = coll.transform;
@@ -181,8 +181,8 @@ public class BulletLife : MonoBehaviour {
 					p = p.parent;
 				}
 
-				Destroy(gameObject.rigidbody2D);
-				Destroy(gameObject.collider2D);
+				Destroy(gameObject.GetComponent<Rigidbody2D>());
+				Destroy(gameObject.GetComponent<Collider2D>());
 
 				GameObject empty = new GameObject();
 				empty.name = "DeleteMe";
@@ -247,13 +247,13 @@ public class BulletLife : MonoBehaviour {
 		}
 		bullet.initialVelocity = (Vector2)(bullet.transform.right * -speed);
 		bullet.spriteRenderer.sprite = GetSprite(spriteName);
-		bullet.rigidbody2D.mass = mass;
-		bullet.rigidbody2D.gravityScale = 1f;
+		bullet.GetComponent<Rigidbody2D>().mass = mass;
+		bullet.GetComponent<Rigidbody2D>().gravityScale = 1f;
 		bullet.gameObject.AddComponent<BoxCollider2D>();
 		bullet.spriteRenderer.sortingLayerName = "Character";
 		bullet.spriteRenderer.sortingOrder = 0;
 		bullet.destroyAfterImpactSeconds = 0.1f;
-		bullet.rigidbody2D.velocity = bullet.initialVelocity;
+		bullet.GetComponent<Rigidbody2D>().velocity = bullet.initialVelocity;
 
 		return bullet;
 	}
@@ -287,11 +287,11 @@ public class BulletLife : MonoBehaviour {
 		bullet.destroyAfterImpactSeconds = destroyAfterImpactSeconds;
 		bullet.spriteRenderer.sortingLayerName = sortingLayer;
 		bullet.spriteRenderer.sortingOrder = sortingOrder;
-		bullet.rigidbody2D.gravityScale = gravityScale;
+		bullet.GetComponent<Rigidbody2D>().gravityScale = gravityScale;
 		if (spinDegreesPerSecond != 0)
 		{
-			bullet.rigidbody2D.angularVelocity = spinDegreesPerSecond;
-			bullet.rigidbody2D.angularDrag = 0f;
+			bullet.GetComponent<Rigidbody2D>().angularVelocity = spinDegreesPerSecond;
+			bullet.GetComponent<Rigidbody2D>().angularDrag = 0f;
 		}
 		return bullet;
 	}

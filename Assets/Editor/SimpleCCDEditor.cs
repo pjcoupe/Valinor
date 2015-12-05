@@ -14,6 +14,7 @@ public class SimpleCCDEditor
 
 	static void OnScene(SceneView sceneview)
 	{
+		return;
 		var targets = GameObject.FindObjectsOfType<SimpleCCD>();
 
 		foreach (var target in targets)

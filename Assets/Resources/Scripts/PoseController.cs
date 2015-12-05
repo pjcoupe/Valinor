@@ -202,7 +202,7 @@ public class PoseController : MonoBehaviour {
 	private float totalLegLength;
 	// Use this for initialization
 	void Awake () {
-		mainRigidBody = transform.parent.rigidbody2D;
+		mainRigidBody = transform.parent.GetComponent<Rigidbody2D>();
 		Random.seed = (int)(System.DateTime.Now.Ticks % int.MaxValue);
 		mainParent = transform;
 		while (mainParent.parent != null)
@@ -327,48 +327,6 @@ public class PoseController : MonoBehaviour {
 
 	private void AnimationInfo()
 	{
-#if UNITY_EDITOR
-		if (clips == null)
-		{
-			clips = new Dictionary<string, AnimationClip>();
-		}
-		// Get a reference to the Animator Controller:
-		UnityEditorInternal.AnimatorController ac = animator.runtimeAnimatorController as UnityEditorInternal.AnimatorController;
-		
-		// Number of layers:
-		//Debug.Log(string.Format("Layer Count: {0}", ac.layerCount));
-		
-		// Names of each layer:
-		for (int layer = 0; layer < ac.layerCount; layer++) 
-		{
-			//Debug.Log(string.Format("Layer {0}: {1}", layer, ac.GetLayer(layer).name));
-			UnityEditorInternal.StateMachine sm = ac.GetLayer(layer).stateMachine;
-			for (int i = 0; i < sm.stateCount; i++) {
-				UnityEditorInternal.State state = sm.GetState(i);
-
-				string pathToAnim = "Animations/"+state.name;
-				//Debug.Log(string.Format("State: {0} pathToClip {1}", state.uniqueName, pathToAnim));
-				if (!clips.ContainsKey(state.name))
-				{
-					AnimationClip clip = (AnimationClip)Resources.Load(pathToAnim, typeof(AnimationClip));
-
-					if (state.name.StartsWith("Aim_Bow"))
-					{
-						clip.wrapMode = WrapMode.Once;
-					}
-					else
-					{
-						clip.wrapMode = WrapMode.Once;
-					}
-					clips[state.name] = clip;
-
-					//Debug.Log("path "+pathToAnim+" clip null "+((clip==null)?"yes":"no"));
-					//Debug.Log("Loaded clip "+clip.name+" wrapmode="+clip.wrapMode);
-				}
-			}
-
-		}
-#endif
 	}
 
 	internal void ChangeDirection()
@@ -541,23 +499,7 @@ public class PoseController : MonoBehaviour {
 	{
 		get
 		{
-			AnimatorStateInfo inf = animator.GetCurrentAnimatorStateInfo(0);
-			if (inf.nameHash == Animator.StringToHash("LegsLayer.Idle_Legs") ||
-			    inf.nameHash == Animator.StringToHash("LegsLayer.Crouched_Legs"))
-			{
-				inf = animator.GetCurrentAnimatorStateInfo(1);
-				if (inf.nameHash == Animator.StringToHash("LeftArm.Left_Arm_Idle") ||
-				    inf.nameHash == Animator.StringToHash("LeftArm.Left_Arm_Idle_Hold"))
-				{
-					inf = animator.GetCurrentAnimatorStateInfo(2);
-					if (inf.nameHash == Animator.StringToHash("RightArm.Right_Arm_Idle") ||
-					    inf.nameHash == Animator.StringToHash("RightArm.Right_Arm_Idle_Hold"))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
+			return true; // PJC to do
 		}
 
 	}

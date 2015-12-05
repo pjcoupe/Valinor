@@ -1,19 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Resources/Scripts/ParentAndConstraint.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Resources/Scripts/AnimatorRootMover.cs">
     <Files>
-      <File FileName="Assets/Resources/Scripts/HumanoidInfo.cs" Line="1" Column="1" />
-      <File FileName="Assets/Editor/SimpleCCDEditor.cs" Line="1" Column="1" />
+      <File FileName="Assets/Resources/Scripts/AnimatorRootMover.cs" Line="167" Column="30" />
+      <File FileName="Assets/Resources/Scripts/HumanoidInfo.cs" Line="420" Column="4" />
+      <File FileName="Assets/Resources/Scripts/ExtensionMethods.cs" Line="36" Column="34" />
+      <File FileName="Assets/Resources/Scripts/WhatAmIWalkingOn.cs" Line="57" Column="43" />
       <File FileName="Assets/Resources/Scripts/SimpleCCD.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/WeaponAttach.cs" Line="95" Column="5" />
-      <File FileName="Assets/Resources/Scripts/GameObjectUtils.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/PoseController.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/PlayerInfo.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/FireArrow.cs" Line="1" Column="1" />
       <File FileName="Assets/NormalClasses/FastMath.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/BulletLife.cs" Line="1" Column="1" />
-      <File FileName="Assets/Resources/Scripts/RotateUncle.cs" Line="41" Column="28" />
-      <File FileName="Assets/Resources/Scripts/ParentAndConstraint.cs" Line="38" Column="68" />
+      <File FileName="Assets/Resources/Scripts/WeaponAttach.cs" Line="1" Column="1" />
+      <File FileName="Assets/Resources/Scripts/LevelManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Resources/Scripts/WhatIsMyHandsTouching.cs" Line="59" Column="12" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

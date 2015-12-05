@@ -52,10 +52,10 @@ public class RandomOrientation : MonoBehaviour {
 		}
 		yScale = yScale * (UnityEngine.Random.Range(randomYRangeScaleMin,randomYRangeScaleMax));
 		transform.localScale = new Vector3(xScale, yScale, zScale);
-		if (rigidbody2D == null && hasRigidbodyMass > 0)
+		if (GetComponent<Rigidbody2D>() == null && hasRigidbodyMass > 0)
 		{
 			gameObject.AddComponent<Rigidbody2D>();
-			gameObject.rigidbody2D.mass = hasRigidbodyMass;
+			gameObject.GetComponent<Rigidbody2D>().mass = hasRigidbodyMass;
 		}
 
 		r= GetComponent<SpriteRenderer>();
@@ -75,7 +75,7 @@ public class RandomOrientation : MonoBehaviour {
 			r.sprite = BulletLife.GetSprite(spriteName, UnityEngine.Random.Range(0, spriteNameUnderScoresVariation));
 		}
 
-		Collider2D coll = gameObject.collider2D;
+		Collider2D coll = gameObject.GetComponent<Collider2D>();
 		if (coll == null && hasCollider)
 		{
 			coll = gameObject.AddComponent<BoxCollider2D>();
