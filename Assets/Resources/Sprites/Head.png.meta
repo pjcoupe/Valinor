@@ -1,0 +1,155 @@
+fileFormatVersion: 2
+guid: 6b7b0741f46be4c45a6312052b9b048c
+timeCreated: 1445638792
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Head_0
+    21300002: Head_1
+    21300004: Head_2
+    21300006: Head_3
+    21300008: Head_4
+    21300010: Head_5
+    21300012: Head_6
+    21300014: Head_7
+    21300016: Head_8
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 512
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Head_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 480
+        width: 37
+        height: 32
+      alignment: 9
+      pivot: {x: .509944379, y: .440759659}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_1
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 479
+        width: 40
+        height: 33
+      alignment: 9
+      pivot: {x: .492271036, y: .355995864}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_2
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 475
+        width: 49
+        height: 37
+      alignment: 9
+      pivot: {x: .481032401, y: .323409617}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 440
+        width: 35
+        height: 38
+      alignment: 9
+      pivot: {x: .503504157, y: .432489485}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_4
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 441
+        width: 35
+        height: 37
+      alignment: 9
+      pivot: {x: .495583355, y: .34257549}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_5
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 435
+        width: 37
+        height: 39
+      alignment: 9
+      pivot: {x: .481160551, y: .393211156}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 399
+        width: 26
+        height: 40
+      alignment: 9
+      pivot: {x: .518033385, y: .377056122}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_7
+      rect:
+        serializedVersion: 2
+        x: 27
+        y: 399
+        width: 26
+        height: 38
+      alignment: 9
+      pivot: {x: .499999702, y: .402713984}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Head_8
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 398
+        width: 27
+        height: 42
+      alignment: 9
+      pivot: {x: .494274855, y: .39012292}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

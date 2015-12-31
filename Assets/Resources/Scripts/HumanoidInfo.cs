@@ -225,12 +225,41 @@ public class HumanoidInfo : MonoBehaviour {
 	public AnimatorRootMover rootMover;
 	private bool rebuildNeeded = true;
 	public float LeftLegSize { get; private set; }
+	public float RightLegSize { get; private set; }
 	public float LeftArmSize { get; private set; }
+	public float RightArmSize { get; private set; }
 	private ConstantForce2D constantForce2D;
 	private Rigidbody2D rigidbody2D;
+	private Vector2 forceOfGravityOnMe;
+	private float forceOfGravityOnMeMagnitude;
+	private List<SpriteRenderer> leftSprites;
+	private List<SpriteRenderer> rightSprites;
+
+
+	public void OnGUI()
+	{
+		if (GUI.Button(new Rect(0,0,100,100),"dir"))
+		{
+			facingLeft = ! facingLeft;
+		}
+	}
 
 	public void Awake()
 	{
+		SpriteRenderer[] leftOrRightSprites = GetComponentsInChildren<SpriteRenderer>();
+		leftSprites = new List<SpriteRenderer>();
+		rightSprites = new List<SpriteRenderer>();
+		foreach (var sprite in leftOrRightSprites)
+		{
+			if (sprite.name.Contains("Left"))
+			{
+				leftSprites.Add(sprite);
+			}
+			else if (sprite.name.Contains("Right"))
+			{
+				rightSprites.Add(sprite);
+			}
+		}
 		if (!initedStaticDict)
 		{
 			initedStaticDict = true;
@@ -240,11 +269,14 @@ public class HumanoidInfo : MonoBehaviour {
 				StaticDictionary.Add(mat.name, mat);
 			}
 		}
+
 		rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
 		constantForce2D = gameObject.GetComponent<ConstantForce2D>();
+		forceOfGravityOnMe = Physics2D.gravity * rigidbody2D.mass;
+		forceOfGravityOnMeMagnitude = forceOfGravityOnMe.magnitude;
 		if (constantForce2D != null)
 		{
-			constantForce2D.force = Physics2D.gravity * rigidbody2D.mass;
+			constantForce2D.enabled = false;
 		}
 		numberOfFeet = numberOfHands = 2;
 		stickyFeet = false;
@@ -252,36 +284,25 @@ public class HumanoidInfo : MonoBehaviour {
 
 	public void ClearMyGravity()
 	{
-		constantForce2D.enabled = false;
+		constantForce2D.enabled = false;	
 	}
 
-	private Quaternion _myGravityRotation;
-	public Quaternion myGravityRotation
+	public void StickyFeet(Vector2 normal)
 	{
-		get
-		{
-			return _myGravityRotation;
-		}
-		set
-		{
-			constantForce2D.enabled = true;
-			if (_myGravityRotation != value)
-			{
-				_myGravityRotation = value;
-				Vector3 interim = (rigidbody2D.gravityScale * Physics2D.gravity * rigidbody2D.mass);
-				constantForce2D.force = (-1f * interim) + (_myGravityRotation * interim);
-			}
-		}
+		constantForce2D.relativeForce = new Vector2(0, -forceOfGravityOnMeMagnitude);
+		constantForce2D.enabled = true;
+
+
 	}
 
-	public void FootHitObject(string name, CustomInfo hitInfo, float footAngle)
+	public void FootHitObject(CustomInfo hitInfo)
 	{
-		rootMover.AddFootCustomInfo(name, hitInfo, footAngle);
+		rootMover.AddFootCustomInfo(hitInfo);
 	}
 
-	public void HandHitObject(string name, CustomInfo hitInfo, float handAngle)
+	public void HandHitObject(CustomInfo hitInfo)
 	{
-		rootMover.AddHandCustomInfo(name, hitInfo, handAngle);
+		rootMover.AddHandCustomInfo(hitInfo);
 	}
 
 	public float scale 
@@ -299,22 +320,32 @@ public class HumanoidInfo : MonoBehaviour {
 		}
 	}
 
-	public float Direction { get { return Mathf.Sign(transform.localScale.x); } }
+	public float Direction { get { return facingLeft ? 1f: -1f; } }
 
 	public bool ClimbOrClamberIsDown { get; set; }
 
+
+	private bool _facingLeft = true;
 	public bool facingLeft
 	{
 		get
 		{
-			return transform.localScale.x > 0;
+			return _facingLeft;
 		}
 		set
 		{
-			if (value != (transform.localScale.x > 0))
+			if (value != _facingLeft)
 			{
-
-				transform.localScale = new Vector3(-scale,scale,scale);
+				_facingLeft = value;
+				foreach (var sprite in leftSprites)
+				{
+					sprite.sortingOrder += _facingLeft?-100:100;
+				}
+				foreach (var sprite in rightSprites)
+				{
+					sprite.sortingOrder += _facingLeft?100:-100;
+				}
+				transform.localScale = new Vector3(scale * (_facingLeft?1f:-1f),scale,scale);
 			}
 		}
 	}
@@ -446,6 +477,8 @@ public class HumanoidInfo : MonoBehaviour {
 		rebuildNeeded = false;
 		LeftArmSize = 0;
 		LeftLegSize = 0;
+		RightArmSize = 0;
+		RightLegSize = 0;
 		foreach (var pair in dict)
 		{
 			string name = pair.Key;
@@ -479,9 +512,25 @@ public class HumanoidInfo : MonoBehaviour {
 					{
 						LeftArmSize += Mathf.Abs(localPos.y) + map.size.y;
 					}
-					//else if (name.Contains("Thigh")) { }
-
-					
+				}
+				else if (name.Contains("Right"))
+				{
+					if (name.Contains("Leg"))
+					{
+						RightLegSize += Mathf.Abs(localPos.y);
+					}
+					else if (name.Contains("Foot"))
+					{
+						RightLegSize += Mathf.Abs(localPos.y) + map.size.y;
+					}
+					else if (name.Contains("Arm"))
+					{
+						RightArmSize += Mathf.Abs(localPos.y);
+					}
+					else if (name.Contains("Hand"))
+					{
+						RightArmSize += Mathf.Abs(localPos.y) + map.size.y;
+					}
 				}
 			}
 		}
