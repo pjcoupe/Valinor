@@ -58,6 +58,7 @@
      <Compile Include="Assets\Resources\Scripts\GameObjectUtils.cs" />
      <Compile Include="Assets\Resources\Scripts\HeadSimpleCCD.cs" />
      <Compile Include="Assets\Resources\Scripts\HumanoidInfo.cs" />
+     <Compile Include="Assets\Resources\Scripts\IKCalculator.cs" />
      <Compile Include="Assets\Resources\Scripts\IKInfo.cs" />
      <Compile Include="Assets\Resources\Scripts\IsGrounded.cs" />
      <Compile Include="Assets\Resources\Scripts\LevelManager.cs" />
@@ -70,9 +71,11 @@
      <Compile Include="Assets\Resources\Scripts\PoseController.cs" />
      <Compile Include="Assets\Resources\Scripts\PositionOrRotateOther.cs" />
      <Compile Include="Assets\Resources\Scripts\RandomOrientation.cs" />
+     <Compile Include="Assets\Resources\Scripts\RemoveColliderAfterTouchDelay.cs" />
      <Compile Include="Assets\Resources\Scripts\RootTransformer.cs" />
      <Compile Include="Assets\Resources\Scripts\RotateUncle.cs" />
      <Compile Include="Assets\Resources\Scripts\SimpleCCD.cs" />
+     <Compile Include="Assets\Resources\Scripts\TestJunk.cs" />
      <Compile Include="Assets\Resources\Scripts\TestSprite.cs" />
      <Compile Include="Assets\Resources\Scripts\WeaponAttach.cs" />
      <Compile Include="Assets\Resources\Scripts\WhatAmIWalkingOn.cs" />

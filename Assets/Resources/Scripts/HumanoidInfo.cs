@@ -72,12 +72,11 @@ public class BodyTemplateSpriteMap
 	private SpriteRenderer _spriteRenderer;
 
 
-	public Vector3 AttachToParent(BodyTemplateSpriteMap parent)
+	public void AttachToParent(BodyTemplateSpriteMap parent)
 	{
 		Vector3 localPos = CalcLocalPositionAttach(parent);
 		//Debug.Log("Attaching "+bodyTemplate.name+" to "+parent.bodyTemplate.name+" localPos "+localPos);
-		bodyTemplate.localPosition = localPos;
-		return localPos;
+		bodyTemplate.localPosition = Vector3.Scale(localPos,parent.size);
 	}
 
 	public SpriteRenderer spriteRenderer
@@ -217,17 +216,51 @@ public class BodyTemplateSpriteMap
 
 public class HumanoidInfo : MonoBehaviour {
 
+	private const float BOXCOLLIDER_MIN_THRESHHOLD = 0.06f;
+	private const float FALL_THRESHHOLD = 1f;
 	public float MyGravityScale { get { return rigidbody2D.gravityScale; } set { rigidbody2D.gravityScale = value; } }
 	public bool stickyFeet { get; private set; }
 	public int numberOfFeet { get; private set; }
 	public int numberOfHands { get; private set; }
 	private static bool initedStaticDict = false;
-	public AnimatorRootMover rootMover;
+	private AnimatorRootMover rootMover;
 	private bool rebuildNeeded = true;
+	public Transform jumpTarget;
+	public float jumpFactor = 2f;
+	public float fallHeightWillingness = 1f;
+	public float jumpOutOfRangeLikelihood = 1f;
+	public Vector3 fallStart { get; set; }
+	public Vector3 jumpStart { get; set; }
+	public bool isFalling { get; set; }
+	private bool _isGrounded = false;
+	public bool isGrounded 
+	{
+		get
+		{
+			return _isGrounded;
+		}
+		set
+		{
+			if (_isGrounded != value)
+			{
+				_isGrounded = value;
+			}
+			if (value)
+			{
+				lastGroundedPosition = transform.position;
+
+			}
+		}
+	}
+	public Vector3 lastGroundedPosition { get; private set; }
+	public float fallThreshhold = FALL_THRESHHOLD;
 	public float LeftLegSize { get; private set; }
 	public float RightLegSize { get; private set; }
 	public float LeftArmSize { get; private set; }
 	public float RightArmSize { get; private set; }
+	public float BottomHeight { get; private set; }
+	public float HeadHeight { get; private set; }
+
 	private ConstantForce2D constantForce2D;
 	private Rigidbody2D rigidbody2D;
 	private Vector2 forceOfGravityOnMe;
@@ -235,13 +268,9 @@ public class HumanoidInfo : MonoBehaviour {
 	private List<SpriteRenderer> leftSprites;
 	private List<SpriteRenderer> rightSprites;
 
-
-	public void OnGUI()
+	public string DetermineAnimatorTrigger()
 	{
-		if (GUI.Button(new Rect(0,0,100,100),"dir"))
-		{
-			facingLeft = ! facingLeft;
-		}
+		return "Stand";
 	}
 
 	public void Awake()
@@ -280,6 +309,7 @@ public class HumanoidInfo : MonoBehaviour {
 		}
 		numberOfFeet = numberOfHands = 2;
 		stickyFeet = false;
+		Init ();
 	}
 
 	public void ClearMyGravity()
@@ -291,19 +321,9 @@ public class HumanoidInfo : MonoBehaviour {
 	{
 		constantForce2D.relativeForce = new Vector2(0, -forceOfGravityOnMeMagnitude);
 		constantForce2D.enabled = true;
-
-
 	}
 
-	public void FootHitObject(CustomInfo hitInfo)
-	{
-		rootMover.AddFootCustomInfo(hitInfo);
-	}
 
-	public void HandHitObject(CustomInfo hitInfo)
-	{
-		rootMover.AddHandCustomInfo(hitInfo);
-	}
 
 	public float scale 
 	{
@@ -350,8 +370,35 @@ public class HumanoidInfo : MonoBehaviour {
 		}
 	}
 	
+	public static float originalArmLength { get; private set; }
+	public static float originalLegLength { get; private set; }
+	public static float originalHeight { get; private set; }
+	public static float originalBendHeight { get; private set; }
+	private static bool doneStaticLengthCalculations = false;
 
-	public void Start()
+	private Transform _bottom;
+	private Transform _leftFoot;
+	private Transform _rightFoot;
+	private Transform _leftLeg;
+	private Transform _rightLeg;
+	private Transform _leftArm;
+	private Transform _rightArm;
+	private Transform _leftThigh;
+	private Transform _rightThigh;
+	private Transform _rightHand;
+	private Transform _leftHand;
+	private Transform _rightShoulder;
+	private Transform _leftShoulder;
+	private Transform _middle;
+	private Transform _top;
+	private Transform _neckBottom;
+	private Transform _neckMiddle;
+	private Transform _neckTop;
+	private Transform _head;	
+	private Transform _jaw;	
+
+
+	void Init()
 	{
 
 		dict = new Dictionary<string, BodyTemplateSpriteMap>((int)BodyParts.LeftFoot+2);
@@ -433,14 +480,89 @@ public class HumanoidInfo : MonoBehaviour {
 		}
 		PositionOrRotateOther[] bodyTemplate = GetComponentsInChildren<PositionOrRotateOther>();
 		BodyTemplateSpriteMap map;
+
 		foreach (var p in bodyTemplate)
 		{
 			if (dict.TryGetValue(p.name, out map))
 			{
 				map.bodyTemplate = p.transform;
+				if (!doneStaticLengthCalculations)
+				{
+					switch (p.name)
+					{
+					case "Jaw":
+						_jaw = p.transform;
+						break;
+					case "Head":
+						_head = p.transform;
+						break;
+					case "Bottom":
+						_bottom = p.transform;
+						break;
+					case "Top":
+						_top = p.transform;
+						break;
+					case "Middle":
+						_middle = p.transform;
+						break;
+					case "NeckBottom":
+						_neckBottom = p.transform;
+						break;
+					case "NeckMiddle":
+						_neckMiddle = p.transform;
+						break;
+					case "NeckTop":
+						_neckTop = p.transform;
+						break;
+					case "RightThigh":
+						_rightThigh = p.transform;
+						break;					
+					case "RightArm":					
+						_rightArm = p.transform;
+						break;
+					case "RightHand":
+						_rightHand = p.transform;
+						break;
+					case "RightShoulder":
+						_rightShoulder = p.transform;
+						break;
+					case "RightLeg":
+						_rightLeg = p.transform;
+						break;
+					case "RightFoot":
+						_rightFoot = p.transform;
+						break;
+					case "LeftThigh":
+						_leftThigh = p.transform;
+						break;					
+					case "LeftArm":
+						_leftArm = p.transform;
+						break;
+					case "LeftHand":
+						_leftHand = p.transform;
+						break;
+					case "LeftShoulder":
+						_leftShoulder = p.transform;
+						break;
+					case "LeftLeg":
+						_leftLeg = p.transform;
+						break;
+					case "LeftFoot":
+						_leftFoot = p.transform;
+						break;
+					}
+				}
 			}
 		}
-		
+		if (!doneStaticLengthCalculations)
+		{
+			originalHeight = _head.position.y - _leftLeg.position.y;
+			originalBendHeight = _neckBottom.position.y - _middle.position.y;
+			originalArmLength = _leftShoulder.position.y - _leftHand.position.y;
+			originalLegLength = _leftThigh.position.y - _leftFoot.position.y;
+		}
+		doneStaticLengthCalculations = true;
+
 		SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
 		foreach (var spriteRenderer in spriteRenderers)
 		{			
@@ -472,68 +594,165 @@ public class HumanoidInfo : MonoBehaviour {
 		return new Vector2(v1.x * v2.x, v1.y * v2.y);
 	}
 
+	public bool doneRebuild { get; private set; }
 	private void Rebuild()
 	{
+		float bottomMost = 9999f;
+		float topMost = -9999f;
+		float leftMost = 9999f;
+		float rightMost = -9999f;
+
 		rebuildNeeded = false;
 		LeftArmSize = 0;
 		LeftLegSize = 0;
 		RightArmSize = 0;
 		RightLegSize = 0;
+		BottomHeight = 0;
+		HeadHeight = 0;
+		Transform bot = null;
 		foreach (var pair in dict)
 		{
 			string name = pair.Key;
 			BodyTemplateSpriteMap map = pair.Value;
-			Vector3 spriteSize = map.spriteRenderer.sprite.bounds.size;
-			map.spriteRenderer.transform.localScale = Vector3Divide(map.size, spriteSize);
+			Sprite sprite = map.spriteRenderer.sprite;
+
+			Bounds bound = sprite.bounds;
+
+			Transform t = map.spriteRenderer.transform;
+			t.localScale = map.size;
+			BoxCollider2D coll = t.GetComponent<BoxCollider2D>();
+
+			bool resizeXCollider = bound.size.x*t.lossyScale.x < BOXCOLLIDER_MIN_THRESHHOLD;
+			bool resizeYCollider = bound.size.y*t.lossyScale.y < BOXCOLLIDER_MIN_THRESHHOLD;
+			bool resize = resizeXCollider || resizeYCollider;
+			if (coll != null)
+			{
+				GameObject.DestroyImmediate(coll);
+			}
+			coll = t.gameObject.AddComponent<BoxCollider2D>();
+			if (resize)
+			{
+				float xSize = Mathf.Max(BOXCOLLIDER_MIN_THRESHHOLD / t.lossyScale.x, bound.size.x);
+				float ySize = Mathf.Max(BOXCOLLIDER_MIN_THRESHHOLD / t.lossyScale.y, bound.size.y);
+				coll.size = new Vector3(xSize,ySize,bound.size.z);
+			}
+			coll.sharedMaterial = (PhysicsMaterial2D)StaticDictionary.Get("Character_Slipping");
+
+			if (!doneRebuild)
+			{
+				float bottom = t.position.y + bound.min.y;
+				if (bottom < bottomMost)
+				{
+					bottomMost = bottom;
+
+				}
+				float top = t.position.y + bound.max.y;
+				if (top > topMost)
+				{
+					topMost = top;
+
+				}
+				float left = t.position.x + bound.min.x;
+				if (left < leftMost)
+				{
+					leftMost = left;
+
+				}
+				float right = t.position.x + bound.max.x;
+				if (right > rightMost)
+				{
+					rightMost = right;
+
+				}
+			}
 			if (name == "Bottom")
 			{
+				bot = map.bodyTemplate;
 				continue;
 			}
 
 			BodyTemplateSpriteMap parentMap = null;
 			if (dict.TryGetValue(map.bodyTemplate.parent.name, out parentMap))
 			{
-				Vector3 localPos = map.AttachToParent(parentMap);
+				map.AttachToParent(parentMap);
 				if (name.Contains("Left"))
 				{
 					if (name.Contains("Leg"))
 					{
-						LeftLegSize += Mathf.Abs(localPos.y);
+						LeftLegSize -= map.bodyTemplate.localPosition.magnitude;
 					}
 					else if (name.Contains("Foot"))
 					{
-						LeftLegSize += Mathf.Abs(localPos.y) + map.size.y;
+						LeftLegSize -= map.bodyTemplate.localPosition.magnitude;
+						LeftLegSize += t.localScale.y * bound.extents.y;
 					}
 					else if (name.Contains("Arm"))
 					{
-						LeftArmSize += Mathf.Abs(localPos.y);
+						LeftArmSize -= map.bodyTemplate.localPosition.magnitude;
+
 					}
 					else if (name.Contains("Hand"))
 					{
-						LeftArmSize += Mathf.Abs(localPos.y) + map.size.y;
+						LeftArmSize -= map.bodyTemplate.localPosition.magnitude;
+						LeftArmSize += t.localScale.y * bound.extents.y;
 					}
 				}
 				else if (name.Contains("Right"))
 				{
 					if (name.Contains("Leg"))
 					{
-						RightLegSize += Mathf.Abs(localPos.y);
+						RightLegSize -= map.bodyTemplate.localPosition.magnitude;
 					}
 					else if (name.Contains("Foot"))
 					{
-						RightLegSize += Mathf.Abs(localPos.y) + map.size.y;
+						RightLegSize -= map.bodyTemplate.localPosition.magnitude;
+						RightLegSize += t.localScale.y * bound.extents.y;
 					}
 					else if (name.Contains("Arm"))
 					{
-						RightArmSize += Mathf.Abs(localPos.y);
+						RightArmSize -= map.bodyTemplate.localPosition.magnitude;
 					}
 					else if (name.Contains("Hand"))
 					{
-						RightArmSize += Mathf.Abs(localPos.y) + map.size.y;
+						RightArmSize -= map.bodyTemplate.localPosition.magnitude;
+						RightArmSize += t.localScale.y * bound.extents.y;
+					}
+					else if (name.Contains("Thigh"))
+					{
+						BottomHeight = map.bodyTemplate.localPosition.magnitude;
 					}
 				}
+				else if (name.Contains("Neck"))
+				{
+					HeadHeight += map.bodyTemplate.localPosition.magnitude;
+				}
+				else if (name.Contains("Middle"))
+				{
+					HeadHeight += map.bodyTemplate.localPosition.magnitude;
+				}
+				else if (name.Contains("Top"))
+				{
+					HeadHeight += map.bodyTemplate.localPosition.magnitude;
+				}
+				else if (name.Contains("Head"))
+				{
+					HeadHeight += map.bodyTemplate.localPosition.magnitude;
+					HeadHeight += t.localScale.y * bound.extents.y;
+                }
 			}
 		}
+		RightArmSize = Mathf.Abs(RightArmSize);
+		LeftArmSize = Mathf.Abs(LeftArmSize);
+		RightLegSize = Mathf.Abs(RightLegSize);
+		LeftLegSize = Mathf.Abs(LeftLegSize);
+		BottomHeight += RightLegSize;
+		if (bot != null)
+		{
+			bot.localPosition = new Vector3(0, BottomHeight,0);
+		}
+		HeadHeight += BottomHeight;
+
+		doneRebuild = true;
 	}
 	
 
@@ -542,6 +761,18 @@ public class HumanoidInfo : MonoBehaviour {
 		if (rebuildNeeded)
 		{
 			Rebuild();
+		}
+	}
+
+	void OnGUI()
+	{
+		if (GUI.Button(new Rect(0,0,100,100),"rebuild"))
+		{
+			rebuildNeeded = true;
+		}
+		if (GUI.Button(new Rect(110,0,100,100),"dir"))
+		{
+			facingLeft = ! facingLeft;
 		}
 	}
 }

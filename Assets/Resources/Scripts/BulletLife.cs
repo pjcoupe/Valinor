@@ -89,7 +89,7 @@ public class BulletLife : MonoBehaviour {
 	void Start () 
 	{
 		if (bulletAnimationFrames > 1)
-		{
+		{		
 			animating = true;
 			StartCoroutine(Animate());
 		}

@@ -1,6 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum HorizontalMovement
+{
+	Back= -1,
+	None,
+	Forward
+}
+
+public enum VerticalMovement
+{
+	Down = -1,
+	None,
+	Up
+}
+
+public enum RotationMovement
+{
+	AntiClockwise = -1,
+	None,
+	Clockwise
+}
+
 public enum MovementType
 {
 	None,
@@ -14,24 +35,51 @@ public enum MovementType
 	Grounded_Jump,
 	Water_Swim,
 	Water_Paddle,
-	Air_Fly
+	Air_Fly,
+	Air_Jump,
+	Stationary_Animation,
+	Moving_Animation
 }
 
 public class AnimatorRootMover : MonoBehaviour {
 
+	private const float RUN_FACTOR = 4f;
+	private const float WALK_FACTOR = 1f;
+	private const float STANDING_JUMP_FACTOR = 6f;
 	private HumanoidInfo humanoidInfo;
 	private CustomInfo[] whatAmIWalkingOn;
 	private CustomInfo[] whatIsMyHandTouching;
 
 	private Rigidbody2D rbody;
 	private Vector2 velocity;
-	private MovementType movementType = MovementType.None;
+
+	public bool needGroundBeforeVelocityApplied;
+	public bool groundedSinceSetMotion;
+	public MovementType movementType = MovementType.None;
+	public HorizontalMovement horizontalMovement = HorizontalMovement.None;
+	public RotationMovement rotationMovement = RotationMovement.None;
+	public VerticalMovement verticalMovement = VerticalMovement.None;
+
 	private float _animationSpeed = 1f;
 	private Animator animator;
 	private Vector2[] footHitNormal;
 	private Vector2[] handHitNormal;
 	private Transform root;
 
+
+	private string currentTrigger = null;
+	public void SetTrigger(string stringInput)
+	{
+		if (currentTrigger != stringInput)
+		{		
+			if (currentTrigger != null)
+			{
+				animator.ResetTrigger(currentTrigger);
+			}
+			animator.SetTrigger(stringInput);
+			currentTrigger = stringInput;
+		}
+	}
 
 	public void AddFootCustomInfo(CustomInfo c)
 	{
@@ -68,11 +116,20 @@ public class AnimatorRootMover : MonoBehaviour {
 
 	}
 
+	public void FootHitObject(CustomInfo hitInfo)
+	{
+		AddFootCustomInfo(hitInfo);
+	}
+	
+	public void HandHitObject(CustomInfo hitInfo)
+	{
+		AddHandCustomInfo(hitInfo);
+	}
+
 	public void Awake()
 	{
 		root = transform.root;
-		humanoidInfo = root.GetComponent<HumanoidInfo>();
-		humanoidInfo.rootMover = this;
+		humanoidInfo = root.GetComponent<HumanoidInfo>();	
 		rbody = root.GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();	
 		whatAmIWalkingOn = new CustomInfo[humanoidInfo.numberOfFeet];
@@ -81,33 +138,82 @@ public class AnimatorRootMover : MonoBehaviour {
 		handHitNormal = new Vector2[humanoidInfo.numberOfHands];
 	}
 
+
 	// SetMotion is called by animation event
 	public void SetMotion(MovementType t)
 	{
+		groundedSinceSetMotion = false;
 		if (t != movementType)
 		{
 			movementType = t;
+			float horizontalVelocity = 0, verticalVelocity = 0;
 			switch (t)
 			{
-			case MovementType.Grounded_Clamber:				
-				float climbDir = humanoidInfo.ClimbOrClamberIsDown ? -4f : 4f;
-				velocity = new Vector2(0,climbDir * humanoidInfo.scale * AnimationSpeed * humanoidInfo.LeftLegSize);
-				break;
 			case MovementType.Grounded_Run:
-				velocity = new Vector2(-4f * humanoidInfo.scale * AnimationSpeed * humanoidInfo.LeftLegSize, 0);
+				needGroundBeforeVelocityApplied = true;
+				horizontalVelocity = -RUN_FACTOR * humanoidInfo.scale * AnimationSpeed * Mathf.Max(humanoidInfo.LeftLegSize,humanoidInfo.RightLegSize);
 				break;
 			case MovementType.Grounded_Walk:
-				velocity = new Vector2(-1f * humanoidInfo.scale * AnimationSpeed * humanoidInfo.LeftLegSize, 0);
+				needGroundBeforeVelocityApplied = true;
+				horizontalVelocity = -WALK_FACTOR * humanoidInfo.scale * AnimationSpeed * Mathf.Max(humanoidInfo.LeftLegSize,humanoidInfo.RightLegSize);
+				break;				
+			case MovementType.Grounded_Jump:
+				if (humanoidInfo.isGrounded)
+				{
+					Vector2 target = humanoidInfo.jumpTarget == null ?(Vector2)root.position + new Vector2(0, humanoidInfo.HeadHeight):(Vector2)humanoidInfo.jumpTarget.position;
+					bool outOfRange = false;
+					float maxVel = STANDING_JUMP_FACTOR * humanoidInfo.jumpFactor;
+					bool jumpEvenIfOutOfRange = ExtensionMethods.passedRandom(humanoidInfo.jumpOutOfRangeLikelihood);
+					float minVel = transform.GetMinimumVelocity(target).magnitude;
+
+					float vel = Mathf.Min (minVel,maxVel);
+					Debug.Log("JUMP min "+minVel+" max "+maxVel+" final "+vel);
+					Quaternion rot = root.GetTrajectory(target, vel, out outOfRange, jumpEvenIfOutOfRange);
+
+					if (outOfRange && !jumpEvenIfOutOfRange)
+					{
+						animator.SetTrigger(humanoidInfo.DetermineAnimatorTrigger());
+						horizontalVelocity = velocity.x;
+						verticalVelocity = velocity.y;
+					}
+					else
+					{
+						velocity = rot * new Vector3(vel, 0, 0);			
+							//Quaternion rot = root.GetTrajectory((target+new Vector2(-1f,0)), STANDING_JUMP_FACTOR);
+						//velocity = rot * new Vector3(0, STANDING_JUMP_FACTOR, 0);
+						horizontalVelocity = velocity.x;
+						verticalVelocity = velocity.y;//STANDING_JUMP_FACTOR * humanoidInfo.scale * AnimationSpeed * humanoidInfo.LeftLegSize;
+
+						humanoidInfo.jumpStart = transform.position;
+					}
+				}
+				else
+				{
+					Debug.Log("JUMP ABORTED NOT GROUNDED");
+					animator.SetTrigger(humanoidInfo.DetermineAnimatorTrigger());
+					horizontalVelocity = velocity.x;
+					verticalVelocity = velocity.y;
+				}
 				break;
+			case MovementType.Grounded_Clamber:	
+				needGroundBeforeVelocityApplied = true;
+				float climbDir = humanoidInfo.ClimbOrClamberIsDown ? -4f : 4f;
+				verticalVelocity = climbDir * humanoidInfo.scale * AnimationSpeed * Mathf.Max(humanoidInfo.LeftArmSize,humanoidInfo.RightArmSize, humanoidInfo.RightLegSize, humanoidInfo.LeftLegSize);
+                break;
+			case MovementType.Stationary_Animation:
+				break; // ie zero
+			case MovementType.Moving_Animation:
 			default:
-				velocity = Vector2.zero;
+				horizontalVelocity = velocity.x;
+				verticalVelocity = velocity.y;
 				break;
 			}
+
+			velocity = new Vector2(horizontalVelocity, verticalVelocity);
+			Debug.Log("PJC SET MOTION "+t+" vel "+velocity);
 		}
 	}
-
-
-	private bool isGrounded = false;
+	
 	private bool doVelocity = false;
 	private bool doRotation = false;
 	private Vector3 angleAxis = Vector3.back;
@@ -121,7 +227,7 @@ public class AnimatorRootMover : MonoBehaviour {
 	public void FixedUpdate()
 	{
 		bool sticky = humanoidInfo.stickyFeet;
-		isGrounded = doVelocity = doRotation = false;
+		humanoidInfo.isGrounded = doVelocity = doRotation = false;
 		float angularVelocity = 0;
 		Vector2 normal = Vector2.zero;
 		theFootHitNormal = theHandHitNormal = Vector2.zero;
@@ -132,7 +238,7 @@ public class AnimatorRootMover : MonoBehaviour {
 		{
 			if (whatAmIWalkingOn[i].isGrounded)
 			{
-				isGrounded = true;
+				humanoidInfo.isGrounded = true;
 				groundedFeetCount++;
 				theFootHitNormal += footHitNormal[i];
 			}
@@ -150,7 +256,7 @@ public class AnimatorRootMover : MonoBehaviour {
 			{
 				if (whatIsMyHandTouching[i].isGrounded)
 				{
-					isGrounded = true;
+					humanoidInfo.isGrounded = true;
 					groundedHandCount++;
 					theHandHitNormal += handHitNormal[i];
 				}
@@ -161,11 +267,10 @@ public class AnimatorRootMover : MonoBehaviour {
 				normal = theHandHitNormal;
 			}
 		}
-		float ninety = 0f;
 
 		if (sticky)
 		{
-			if (isGrounded)
+			if (humanoidInfo.isGrounded)
 			{
 				nextClearTime = Time.time + NEXT_CLEAR_TIME_MSECS;
 				humanoidInfo.StickyFeet(normal);
@@ -178,44 +283,48 @@ public class AnimatorRootMover : MonoBehaviour {
 				}
 			}
 		}
-
-		if (isGrounded)
+		float groundedAngle = 0;
+		if (humanoidInfo.isGrounded)
 		{
-			float groundedAngle = Vector2.up.SignedAngle(normal);
+			groundedSinceSetMotion = true;
+
+			groundedAngle = Vector2.up.SignedAngle(normal);
 			switch (movementType)
 			{
-				case MovementType.Grounded_Clamber:		
-					doVelocity = true;
-					doRotation = true;
-					groundedAngle -= 90f;
-					angleAxis = Vector3.back;
-					break;
-
-				case MovementType.Grounded_Run:
-				case MovementType.Grounded_Walk:
-					doVelocity = true;
-					doRotation = sticky;
-					angleAxis = Vector3.back;		
-					break;
-				default:
-					break;
-			}
-
-
-			if (doVelocity)
-			{
-				Quaternion rot = Quaternion.AngleAxis(groundedAngle, angleAxis);			
-				Vector2 angledVector = rot * velocity;
-				rbody.velocity = humanoidInfo.Direction * angledVector;
-			}
-			if (doRotation)
-			{
-				rbody.rotation = -groundedAngle;
+			case MovementType.Grounded_Jump:
+				doVelocity = true;					
+				angleAxis = Vector3.back;		
+				break;
+			case MovementType.Grounded_Clamber:		
+			case MovementType.Grounded_Run:
+			case MovementType.Grounded_Walk:
+				doVelocity = true;
+				doRotation = sticky;
+				angleAxis = Vector3.back;		
+				break;
+			default:
+				break;
 			}
 		}
 		else
 		{
 
+		}
+		// movements not dependent on whether grounded or not
+		switch (movementType)
+		{
+		default:
+			break;
+		}
+		if (doVelocity && (!needGroundBeforeVelocityApplied || (needGroundBeforeVelocityApplied && groundedSinceSetMotion)))
+		{
+			Quaternion rot = Quaternion.AngleAxis(groundedAngle, angleAxis);			
+			Vector2 angledVector = rot * velocity;
+			rbody.velocity = humanoidInfo.Direction * angledVector;
+		}
+		if (doRotation)
+		{
+			rbody.rotation = -groundedAngle;
 		}
 		for (i=0; i < humanoidInfo.numberOfFeet; i++)
 		{
@@ -226,5 +335,7 @@ public class AnimatorRootMover : MonoBehaviour {
 			whatIsMyHandTouching[i] = default(CustomInfo);
 		}
 
+		float yVelocity = rbody.velocity.y;
+		humanoidInfo.isFalling = (yVelocity < humanoidInfo.fallThreshhold);
 	}
 }

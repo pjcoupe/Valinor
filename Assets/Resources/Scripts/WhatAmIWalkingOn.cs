@@ -3,7 +3,7 @@ using System.Collections;
 
 public class WhatAmIWalkingOn : MonoBehaviour {
 
-	private HumanoidInfo humanoidInfo;
+	private AnimatorRootMover animatorRootMover;
 	private Transform root;
 	private int groundedCollisionCount = 0;
 	private Vector2 lastNormal;
@@ -11,7 +11,7 @@ public class WhatAmIWalkingOn : MonoBehaviour {
 
 	void Awake()
 	{
-		humanoidInfo = transform.root.GetComponent<HumanoidInfo>();
+		animatorRootMover = transform.root.GetComponentInChildren<AnimatorRootMover>();
 	}
 
 	void OnCollisionEnter2D(Collision2D other)
@@ -61,7 +61,7 @@ public class WhatAmIWalkingOn : MonoBehaviour {
 	{
 		lastNormal = normal;
 		CustomInfo customInfo = other.GetCustomInfo(transform.name, normal);
-		humanoidInfo.FootHitObject(customInfo);
+		animatorRootMover.FootHitObject(customInfo);
 		if (customInfo.isGrounded)
 		{
 			if (!isStay)

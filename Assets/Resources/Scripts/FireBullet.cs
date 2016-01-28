@@ -9,7 +9,7 @@ public class FireBullet : MonoBehaviour {
 	 float bulletMass = 0.01f;
 	 float bulletSpeed = 15f;
 	 float spreadDegrees = 10f;
-	 float bulletLife = 0.5f;
+	 float bulletLife = 2f;
 	 float regulatedMaxForce = 3000;
 
 	private float bulletFireDelay = 0.1f;
@@ -267,7 +267,7 @@ public class FireBullet : MonoBehaviour {
 				life,
 				postInstantiationRotation,
 				2,
-				0.5f,
+				0.01f,
 				null,
 				false,
 				0.1f,

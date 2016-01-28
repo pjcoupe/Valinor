@@ -138,7 +138,415 @@ AnimationClip:
       m_PostInfinity: 2
     path: IK_Target_Right_Hand
   m_ScaleCurves: []
-  m_FloatCurves: []
+  m_FloatCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Bend
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Bend
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Head_Look
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Head_Look
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .223978922
+        inSlope: -2.56725574
+        outSlope: -2.56725574
+        tangentMode: 10
+      - time: .25
+        value: -.417835027
+        inSlope: -.248555541
+        outSlope: -.248555541
+        tangentMode: 10
+      - time: .5
+        value: .0997011438
+        inSlope: 2.07259846
+        outSlope: 2.07259846
+        tangentMode: 10
+      - time: .75
+        value: .618464172
+        inSlope: .248555541
+        outSlope: .248555541
+        tangentMode: 10
+      - time: 1
+        value: .223978922
+        inSlope: -1.57794094
+        outSlope: -1.57794094
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Left_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.89327997
+        inSlope: -.0609717369
+        outSlope: -.0609717369
+        tangentMode: 10
+      - time: .25
+        value: -.908522904
+        inSlope: -.203474998
+        outSlope: -.203474998
+        tangentMode: 10
+      - time: .5
+        value: -.995017469
+        inSlope: .245419741
+        outSlope: .245419741
+        tangentMode: 10
+      - time: .75
+        value: -.785813034
+        inSlope: .203474998
+        outSlope: .203474998
+        tangentMode: 10
+      - time: 1
+        value: -.89327997
+        inSlope: -.429867744
+        outSlope: -.429867744
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Left_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.131421849
+        inSlope: .903225839
+        outSlope: .903225839
+        tangentMode: 10
+      - time: .25
+        value: .0943846107
+        inSlope: -.709677339
+        outSlope: -.709677339
+        tangentMode: 10
+      - time: .5
+        value: -.486260533
+        inSlope: -1.80645156
+        outSlope: -1.80645156
+        tangentMode: 10
+      - time: .75
+        value: -.808841169
+        inSlope: .709677339
+        outSlope: .709677339
+        tangentMode: 10
+      - time: 1
+        value: -.131421849
+        inSlope: 2.70967722
+        outSlope: 2.70967722
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Left_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.846154213
+        inSlope: .172042847
+        outSlope: .172042847
+        tangentMode: 10
+      - time: .25
+        value: -.803143501
+        inSlope: .0860214233
+        outSlope: .0860214233
+        tangentMode: 10
+      - time: .5
+        value: -.803143501
+        inSlope: .666667581
+        outSlope: .666667581
+        tangentMode: 10
+      - time: .75
+        value: -.469809711
+        inSlope: -.0860214233
+        outSlope: -.0860214233
+        tangentMode: 10
+      - time: 1
+        value: -.846154213
+        inSlope: -1.50537801
+        outSlope: -1.50537801
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Left_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .0300465431
+        inSlope: 2.30886459
+        outSlope: 2.30886459
+        tangentMode: 10
+      - time: .25
+        value: .607262671
+        inSlope: .229762018
+        outSlope: .229762018
+        tangentMode: 10
+      - time: .5
+        value: .144927531
+        inSlope: -2.00136447
+        outSlope: -2.00136447
+        tangentMode: 10
+      - time: .75
+        value: -.393419623
+        inSlope: -.229761899
+        outSlope: -.229761899
+        tangentMode: 10
+      - time: 1
+        value: .0300465431
+        inSlope: 1.6938647
+        outSlope: 1.6938647
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Right_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.999548554
+        inSlope: .820189953
+        outSlope: .820189953
+        tangentMode: 10
+      - time: .25
+        value: -.794501066
+        inSlope: .344290018
+        outSlope: .344290018
+        tangentMode: 10
+      - time: .5
+        value: -.827403545
+        inSlope: -.249715924
+        outSlope: -.249715924
+        tangentMode: 10
+      - time: .75
+        value: -.919359028
+        inSlope: -.344290018
+        outSlope: -.344290018
+        tangentMode: 10
+      - time: 1
+        value: -.999548554
+        inSlope: -.320758104
+        outSlope: -.320758104
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Right_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.357228309
+        inSlope: -1.4193548
+        outSlope: -1.4193548
+        tangentMode: 10
+      - time: .25
+        value: -.712067008
+        inSlope: .344085991
+        outSlope: .344085991
+        tangentMode: 10
+      - time: .5
+        value: -.185185298
+        inSlope: 1.61290312
+        outSlope: 1.61290312
+        tangentMode: 10
+      - time: .75
+        value: .0943845958
+        inSlope: -.344085991
+        outSlope: -.344085991
+        tangentMode: 10
+      - time: 1
+        value: -.357228309
+        inSlope: -1.80645156
+        outSlope: -1.80645156
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Right_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.695616186
+        inSlope: .946237683
+        outSlope: .946237683
+        tangentMode: 10
+      - time: .25
+        value: -.459056765
+        inSlope: -.430107117
+        outSlope: -.430107117
+        tangentMode: 10
+      - time: .5
+        value: -.910669744
+        inSlope: -.774194896
+        outSlope: -.774194896
+        tangentMode: 10
+      - time: .75
+        value: -.846154213
+        inSlope: .430107117
+        outSlope: .430107117
+        tangentMode: 10
+      - time: 1
+        value: -.695616186
+        inSlope: .602152109
+        outSlope: .602152109
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Right_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
   m_PPtrCurves: []
   m_SampleRate: 60
   m_WrapMode: 0
@@ -169,6 +577,78 @@ AnimationClip:
       attribute: 1
       script: {fileID: 0}
       classID: 4
+      customType: 0
+      isPPtrCurve: 0
+    - path: 2172082957
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 2172082957
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 1872371729
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 1872371729
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 1011535373
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 1011535373
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 3534206225
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 3534206225
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 3843561344
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 3843561344
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 4167031685
+      attribute: 3668744040
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
+      customType: 0
+      isPPtrCurve: 0
+    - path: 4167031685
+      attribute: 2913708030
+      script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+      classID: 114
       customType: 0
       isPPtrCurve: 0
     pptrCurveMapping: []
@@ -598,6 +1078,414 @@ AnimationClip:
     path: IK_Target_Right_Hand
     classID: 4
     script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: .0555212907
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Bend
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: .998457491
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Bend
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: -.997519732
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Head_Look
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .25
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .5
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: .75
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      - time: 1
+        value: -.0703880712
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Head_Look
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .223978922
+        inSlope: -2.56725574
+        outSlope: -2.56725574
+        tangentMode: 10
+      - time: .25
+        value: -.417835027
+        inSlope: -.248555541
+        outSlope: -.248555541
+        tangentMode: 10
+      - time: .5
+        value: .0997011438
+        inSlope: 2.07259846
+        outSlope: 2.07259846
+        tangentMode: 10
+      - time: .75
+        value: .618464172
+        inSlope: .248555541
+        outSlope: .248555541
+        tangentMode: 10
+      - time: 1
+        value: .223978922
+        inSlope: -1.57794094
+        outSlope: -1.57794094
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Left_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.89327997
+        inSlope: -.0609717369
+        outSlope: -.0609717369
+        tangentMode: 10
+      - time: .25
+        value: -.908522904
+        inSlope: -.203474998
+        outSlope: -.203474998
+        tangentMode: 10
+      - time: .5
+        value: -.995017469
+        inSlope: .245419741
+        outSlope: .245419741
+        tangentMode: 10
+      - time: .75
+        value: -.785813034
+        inSlope: .203474998
+        outSlope: .203474998
+        tangentMode: 10
+      - time: 1
+        value: -.89327997
+        inSlope: -.429867744
+        outSlope: -.429867744
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Left_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.131421849
+        inSlope: .903225839
+        outSlope: .903225839
+        tangentMode: 10
+      - time: .25
+        value: .0943846107
+        inSlope: -.709677339
+        outSlope: -.709677339
+        tangentMode: 10
+      - time: .5
+        value: -.486260533
+        inSlope: -1.80645156
+        outSlope: -1.80645156
+        tangentMode: 10
+      - time: .75
+        value: -.808841169
+        inSlope: .709677339
+        outSlope: .709677339
+        tangentMode: 10
+      - time: 1
+        value: -.131421849
+        inSlope: 2.70967722
+        outSlope: 2.70967722
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Left_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.846154213
+        inSlope: .172042847
+        outSlope: .172042847
+        tangentMode: 10
+      - time: .25
+        value: -.803143501
+        inSlope: .0860214233
+        outSlope: .0860214233
+        tangentMode: 10
+      - time: .5
+        value: -.803143501
+        inSlope: .666667581
+        outSlope: .666667581
+        tangentMode: 10
+      - time: .75
+        value: -.469809711
+        inSlope: -.0860214233
+        outSlope: -.0860214233
+        tangentMode: 10
+      - time: 1
+        value: -.846154213
+        inSlope: -1.50537801
+        outSlope: -1.50537801
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Left_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: .0300465431
+        inSlope: 2.30886459
+        outSlope: 2.30886459
+        tangentMode: 10
+      - time: .25
+        value: .607262671
+        inSlope: .229762018
+        outSlope: .229762018
+        tangentMode: 10
+      - time: .5
+        value: .144927531
+        inSlope: -2.00136447
+        outSlope: -2.00136447
+        tangentMode: 10
+      - time: .75
+        value: -.393419623
+        inSlope: -.229761899
+        outSlope: -.229761899
+        tangentMode: 10
+      - time: 1
+        value: .0300465431
+        inSlope: 1.6938647
+        outSlope: 1.6938647
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Right_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.999548554
+        inSlope: .820189953
+        outSlope: .820189953
+        tangentMode: 10
+      - time: .25
+        value: -.794501066
+        inSlope: .344290018
+        outSlope: .344290018
+        tangentMode: 10
+      - time: .5
+        value: -.827403545
+        inSlope: -.249715924
+        outSlope: -.249715924
+        tangentMode: 10
+      - time: .75
+        value: -.919359028
+        inSlope: -.344290018
+        outSlope: -.344290018
+        tangentMode: 10
+      - time: 1
+        value: -.999548554
+        inSlope: -.320758104
+        outSlope: -.320758104
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Right_Foot
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.357228309
+        inSlope: -1.4193548
+        outSlope: -1.4193548
+        tangentMode: 10
+      - time: .25
+        value: -.712067008
+        inSlope: .344085991
+        outSlope: .344085991
+        tangentMode: 10
+      - time: .5
+        value: -.185185298
+        inSlope: 1.61290312
+        outSlope: 1.61290312
+        tangentMode: 10
+      - time: .75
+        value: .0943845958
+        inSlope: -.344085991
+        outSlope: -.344085991
+        tangentMode: 10
+      - time: 1
+        value: -.357228309
+        inSlope: -1.80645156
+        outSlope: -1.80645156
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.x
+    path: IK_Target_Right_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - time: 0
+        value: -.695616186
+        inSlope: .946237683
+        outSlope: .946237683
+        tangentMode: 10
+      - time: .25
+        value: -.459056765
+        inSlope: -.430107117
+        outSlope: -.430107117
+        tangentMode: 10
+      - time: .5
+        value: -.910669744
+        inSlope: -.774194896
+        outSlope: -.774194896
+        tangentMode: 10
+      - time: .75
+        value: -.846154213
+        inSlope: .430107117
+        outSlope: .430107117
+        tangentMode: 10
+      - time: 1
+        value: -.695616186
+        inSlope: .602152109
+        outSlope: .602152109
+        tangentMode: 10
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+    attribute: position.y
+    path: IK_Target_Right_Hand
+    classID: 114
+    script: {fileID: 11500000, guid: f262a421475fd4affb6e63c85e89b0ed, type: 3}
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0

@@ -11,6 +11,7 @@ public struct CustomInfo
 	public Vector2 avgNormal { get; private set; }
 	public Quaternion avgNormalAngle { get; private set; }
 	private int addCount;
+	public bool isStatic;
 
 	// be sure to add them |= to Add(..)
 	public bool isGrounded { get; private set; } // G######### 
@@ -80,6 +81,7 @@ public struct CustomInfo
 				useNormalsFromCollider = true;
 				break;
 			}
+			isStatic = true;
 		}
 
 	}
@@ -109,4 +111,81 @@ public static class ExtensionMethods
 	{
 		return Vector2.Angle (a, b) * Mathf.Sign (Vector3.Dot (Vector3.back, Vector3.Cross (a, b)));
     }
+
+
+	public static bool passedRandom(float chance)
+	{
+		return UnityEngine.Random.value < chance;
+	}
+
+	public static Vector2 GetMinimumVelocity(this Transform t, Transform target)
+	{
+		return t.GetMinimumVelocity(target.position);
+	}
+	public static Vector2 GetMinimumVelocity(this Transform t, Vector2 target)
+	{
+		Vector2 targetPos = target - (Vector2)t.position;
+		float x = Mathf.Abs(targetPos.x);
+		float y = Mathf.Abs(targetPos.y);
+		float g = LevelManager.levelGravityMagnitude;
+		float time = Mathf.Sqrt(2f*y / g);
+		float vy = targetPos.y > 0 ? g * time : 0;
+		float vx = x / time;
+		float vxAlternate = Mathf.Sqrt(x*g);
+
+		Vector2 v = new Vector2(Mathf.Sign(targetPos.x)*(vx < vxAlternate ? vx : vxAlternate), vy);
+
+		return v;
+	}
+
+	public static float ClampMinus180To180(this float f)
+	{
+		while (Mathf.Abs(f) > 180f)
+		{
+			f = f - 360f * (Mathf.Sign(f));
+		}
+		return f;
+	}
+
+	public static Quaternion GetTrajectory(this Transform t, Transform target, float maxVelocity, out bool outOfRange, bool calculateEvenIfOutOfRange = true)
+	{
+		return t.GetTrajectory(target.position,maxVelocity,out outOfRange, calculateEvenIfOutOfRange);
+	}
+	public static Quaternion GetTrajectory(this Transform t, Vector2 target, float maxVelocity, out bool outOfRange, bool calculateEvenIfOutOfRange = true)
+	{
+		float x = target.x - t.position.x;
+		float y = target.y - t.position.y;
+		float g = LevelManager.levelGravityMagnitude;
+		float v2 = maxVelocity * maxVelocity;
+		float underRoot = Mathf.Sqrt(v2*v2 - g * (g*x*x + 2f*y*v2));
+
+		float chosenAngle = (target.y > t.position.y) ? Mathf.Atan2(v2 + underRoot, g*x) : Mathf.Atan2(v2 - underRoot, g*x);
+		if (float.IsNaN(chosenAngle))
+		{
+			outOfRange = true;
+			if (calculateEvenIfOutOfRange)
+			{
+				v2 = 1000000f;
+				underRoot = Mathf.Sqrt(v2*v2 - g * (g*x*x + 2f*y*v2));
+				float big = Mathf.Atan2(v2 + underRoot, g*x);
+				float small = Mathf.Atan2(v2 - underRoot, g*x);
+				if (big > Mathf.PI/2f && small < -Mathf.PI/2f)
+				{
+					small += (Mathf.PI * 2f);
+				}
+				chosenAngle = (big + small) / 2f;
+			}
+			else
+			{
+				return Quaternion.identity;
+			}
+		}
+		else
+		{
+			outOfRange = false;
+		}
+		chosenAngle *= Mathf.Rad2Deg;
+		Quaternion rot = Quaternion.AngleAxis(chosenAngle, Vector3.forward);
+		return rot;
+	}
 }

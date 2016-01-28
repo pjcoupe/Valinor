@@ -11,35 +11,40 @@ internal struct SecondJointRelLengthAndDistance
 	public int lastLevelUsed;
 }
 
+public enum IKType
+{
+	Foot,
+	Hand,
+	Bend,
+	HeadLook
+}
+
 [ExecuteInEditMode]
 public class SimpleCCD : MonoBehaviour
 {
 	private int iterations = 5;
-
+	
 	[Range(0f, 1f)]
 	public float targetProportion = 1;
-
+	public IKType ikType;
 	public int rotationParents = 0;
 	public float rotationOffset = 0;
 	public bool iterationMethod = false;
 	public bool isFoot = false;
 	public static bool muteAll = false;
 	public Transform target;
+	private bool relativeToParent = true;
 	public Transform alternateTarget;
 	public Transform targetMax;
 	public Transform endTransform;
 	public bool restoreDefaults = false;
 	private Transform root;
-
-
-
-	private static List<SecondJointRelLengthAndDistance> jointCache;
+	private bool doneInit;
 
 	public Transform[] endTransformMissiles = new Transform[0];
 
 	public Node[] angleLimits = new Node[0];
-
-	Dictionary<Transform, Node> nodeCache = null; 
+	
 	[System.Serializable]
 	public class Node
 	{
@@ -51,79 +56,9 @@ public class SimpleCCD : MonoBehaviour
 	[Range(0,1f)]
 	public float slide;
 
-
-	private int GetJointCacheIndex()
-	{
-		// normalise
-		int secondJointRelLengthTimes100 = Mathf.RoundToInt(endNodeDistance * 100 / firstNodeDistance);
-		int lowestLevel = 999;
-		int lowestLevelIndex = 0;
-		for (int i=0; i < jointCache.Count; i++)
-		{
-			int level = jointCache[i].lastLevelUsed;
-			int secJoint = jointCache[i].secondJointRelLengthTimes100;
-			if (level <= lowestLevel || secJoint == 0)
-			{
-				lowestLevel = level;
-				lowestLevelIndex = i;
-			}
-			if (secJoint != 0 && secJoint == secondJointRelLengthTimes100)
-			{
-				return i;
-			}
-		}
-		// not found so add one
-		/*
-		firstNodeDistance = 1f;
-		endNodeDistance = 3f;
-		minDistance = 2f;
-		maxDistance = 4f;
-*/
-
-		float a2, b2, abTimes2, a2Plusb2, a2Minusb2, d2, maxMinusMinDist, cosD, cosB, B, D;
-		a2 = firstNodeDistance * firstNodeDistance;
-		b2 = endNodeDistance * endNodeDistance;
-		abTimes2 = 2 * firstNodeDistance * endNodeDistance;
-		a2Plusb2 = a2 + b2;
-		a2Minusb2 = a2 - b2;
-
-		SecondJointRelLengthAndDistance j = jointCache[lowestLevelIndex];
-
-		maxMinusMinDist = maxDistance - minDistance;
-		for (byte i=0; i <= 99; i++)
-		{
-			float dist = minDistance + (maxMinusMinDist * (float)i/100f);
-			d2 = dist * dist;
-			cosB = (a2Minusb2 + d2) / (2*firstNodeDistance*dist);
-			cosD = (a2Plusb2 - d2) / abTimes2;
-			B = Mathf.Acos(cosB) * Mathf.Rad2Deg;
-			D = Mathf.Acos(cosD) * Mathf.Rad2Deg;
-
-			j.cachedRotations[i] = new Vector2(B, D);
-			//Debug.Log("PJC "+ transform.name+"  firstNode="+firstNodeDistance+" lastNode="+endNodeDistance+" i="+i+" dist = "+dist+" minDist="+minDistance+" maxDist="+maxDistance+" arm="+D+" should="+B);
-		}
-		j.cachedRotations[100] = new Vector2(0, 180f);
-		j.lastLevelUsed = LevelManager.currentLevel;
-		j.secondJointRelLengthTimes100 = secondJointRelLengthTimes100;
-		return lowestLevelIndex;
-	}
-
-	private const int maxListElements = 10;
+	private const int maxListElements = 1;
 	private int jointCacheIndex = -1;
-	static SimpleCCD()
-	{
-		if (jointCache == null || jointCache.Count == 0)
-		{
-			jointCache = new List<SecondJointRelLengthAndDistance>(maxListElements); // PJC change this to bigger values as add more bad guy types with diff arm/leg ratio length
-			for (int i=0; i < maxListElements; i++)
-			{
-				SecondJointRelLengthAndDistance j = new SecondJointRelLengthAndDistance();
-				j.cachedRotations = new Dictionary<byte, Vector2>(101);
-				j.secondJointRelLengthTimes100 = 0;
-				jointCache.Add(j);
-			}
-		}
-	}
+
 
 	void OnValidate()
 	{
@@ -140,7 +75,8 @@ public class SimpleCCD : MonoBehaviour
 	private float distanceSpread = 0;
 	private LockFootRotation lockEndTransformRotation = null;
 	private float endNodeDistance, firstNodeDistance;
-	private SecondJointRelLengthAndDistance myJoint;
+	private IKCalculator iKCalculator;
+
 	private HumanoidInfo humanoidInfo = null;
 	public Transform mirrorYEndTransform;
 
@@ -155,22 +91,25 @@ public class SimpleCCD : MonoBehaviour
 			return;
 		}
 
-		// Cache optimization
-		nodeCache = new Dictionary<Transform, Node>(angleLimits.Length);
-		foreach (var node1 in angleLimits)
+		Init ();
+    }
+   
+	private void Init()
+	{
+		if (target != null)
 		{
-			if (!nodeCache.ContainsKey(node1.Transform))
-			{
-				nodeCache.Add(node1.Transform, node1);
-			}
+			iKCalculator = target.GetComponent<IKCalculator>();
 		}
+		
+		// Cache optimization
+
 		lockEndTransformRotation = target.gameObject.GetComponent<LockFootRotation>();
-
-
+		
+		
 		Transform node = endTransform.parent;
 		float scaleF = Mathf.Abs(transform.root.localScale.x);
 		endNodeDistance = endTransform.localPosition.magnitude * scaleF;
-		firstNodeDistance = 0;
+		firstNodeDistance = 1f;
 		maxDistance = endNodeDistance;
 		while (true)
 		{
@@ -179,16 +118,13 @@ public class SimpleCCD : MonoBehaviour
 			firstNodeDistance = node.localPosition.magnitude * scaleF;
 			maxDistance += firstNodeDistance;
 			node = node.parent;
-        }        
+		}        
 		minDistance = Mathf.Abs(firstNodeDistance - endNodeDistance);
+		
 		distanceSpread = maxDistance - minDistance;
-		if (!iterationMethod)
-		{
-			jointCacheIndex = GetJointCacheIndex();
-			myJoint = jointCache[jointCacheIndex];
-		}
-    }
-   
+
+		doneInit = true;
+	}
     
 	private Vector3 lastTargetPosition;
 	private Vector3 lastTransformPosition;
@@ -202,14 +138,12 @@ public class SimpleCCD : MonoBehaviour
 	{	
 		Transform child = endTransform.parent;
 		float direction = humanoidInfo.Direction;
-		float a2, b2, abTimes2, a2Plusb2, a2Minusb2, d2, maxMinusMinDist, cosD, cosB, B, D;
+		float a2, b2, abTimes2, a2Plusb2, a2Minusb2, d2, cosD, cosB, B, D;
 		a2 = firstNodeDistance * firstNodeDistance;
 		b2 = endNodeDistance * endNodeDistance;
 		abTimes2 = 2f * firstNodeDistance * endNodeDistance;
 		a2Plusb2 = a2 + b2;
 		a2Minusb2 = a2 - b2;
-
-		maxMinusMinDist = maxDistance - minDistance;
 
 		d2 = dist * dist;
 		cosB = (a2Minusb2 + d2) / (2f * firstNodeDistance*dist);
@@ -243,58 +177,108 @@ public class SimpleCCD : MonoBehaviour
 			}
 			else
 			{
-
 				eulerZ = rootEulerZ +B - (direction * signedAngle);
 				childEulerZ = 180f + D;
 			}
 		}
-		if (Mathf.Abs(childEulerZ) > 180f)
+		if (float.IsNaN(eulerZ))
 		{
-			childEulerZ -= 360f * Mathf.Sign(childEulerZ);
+			eulerZ = 0;
 		}
-		if (Mathf.Abs(eulerZ) > 180f)
+		if (float.IsNaN(childEulerZ))
 		{
-			eulerZ -= 360f * Mathf.Sign(eulerZ);
+			childEulerZ = 0;
+		}
+		childEulerZ = childEulerZ.ClampMinus180To180();
+		eulerZ = eulerZ.ClampMinus180To180();
+		if (true)
+		foreach (var limit in angleLimits)
+		{
+			float minLimit = limit.min;
+			float maxLimit = limit.max;
+			if (limit.Transform == transform)
+			{			
+				minLimit = (minLimit + rootEulerZ).ClampMinus180To180();
+				maxLimit = (maxLimit + rootEulerZ).ClampMinus180To180();
 
-		}
-		Node limit;		
-		if (nodeCache.TryGetValue(transform, out limit))
-		{
-			eulerZ = Mathf.Clamp(eulerZ, limit.min, limit.max);
-		}
-		if (nodeCache.TryGetValue(child, out limit))
-		{
-			childEulerZ = Mathf.Clamp(childEulerZ, limit.min, limit.max);
+				maxLimit += maxLimit <= minLimit ? 360f : 0;
+				eulerZ += (eulerZ < minLimit)? 360f: (eulerZ > maxLimit)?-360f:0;
+				eulerZ = eulerZ % 360f;
+				eulerZ = Mathf.Clamp(eulerZ, minLimit, maxLimit);
+
+			}
+			else if (limit.Transform == child)
+			{
+				childEulerZ = Mathf.Clamp(childEulerZ, minLimit, maxLimit);
+			}
 		}
 
-		transform.localEulerAngles = new Vector3(0, 0, eulerZ);
+		transform.eulerAngles = new Vector3(0, 0, eulerZ);
 		child.localEulerAngles = new Vector3(0,0, childEulerZ);
 
     }
     void LateUpdate()
     {
 
+
         if (muteAll || (target == null && alternateTarget == null) || endTransform == null)
 			return;
 
 		if (!Application.isPlaying)
 			Start();
+		else
+		{
+			if (iKCalculator != null && humanoidInfo != null && !humanoidInfo.doneRebuild)
+			{
+				return;
+			}
+		}
 
 		Vector3 targetPosition;
-		Vector3 t1 = target == null ? alternateTarget.position : target.position;
-		Vector3 t2 = alternateTarget == null ? target.position : alternateTarget.position;
+		Vector3 adjustedAnimatedTargetPosition = Vector3.zero;
+
+		if (target != null)
+		{
+			if (iKCalculator != null && targetProportion > 0)
+			{
+				if (!Application.isPlaying)
+				{
+					switch (ikType)
+					{
+					case IKType.Foot:
+					case IKType.Hand:				
+						adjustedAnimatedTargetPosition = iKCalculator.StartNode.position + root.rotation * (Vector3)(iKCalculator.position*maxDistance);
+						break;
+					case IKType.Bend:
+					case IKType.HeadLook:
+						adjustedAnimatedTargetPosition = iKCalculator.StartNode.position + (Vector3)(iKCalculator.position*maxDistance);
+						break;
+					}
+				}
+				else
+				{
+					adjustedAnimatedTargetPosition = iKCalculator.StartNode.position + (root.rotation * (Vector3)(iKCalculator.position*maxDistance));
+
+				}
+			}
+			else
+			{
+				adjustedAnimatedTargetPosition = target.position;
+			}
+		}
+		if (name == "RightThigh")
+		{
+
+
+		}
+		Vector3 t1 = target == null ? alternateTarget.position : adjustedAnimatedTargetPosition;
+		Vector3 t2 = alternateTarget == null ? adjustedAnimatedTargetPosition : alternateTarget.position;
 		targetPosition = Vector3.Lerp(t2,t1, targetProportion);
 
 		currentTargetPosition = targetMax? Vector3.Lerp(targetPosition, targetMax.position, slide):targetPosition;
 		Vector3 currentTransformPosition = transform.position;
 		if (currentTargetPosition == lastTargetPosition && lastTransformPosition == currentTransformPosition)
 		{
-			/*
-			if (transform.name == "IK_Neck_Top")
-			{
-				Debug.Log(transform.name+" target same");
-			}
-			*/
 			return;
 		}
 		lastTargetPosition = currentTargetPosition;
@@ -302,9 +286,21 @@ public class SimpleCCD : MonoBehaviour
 		Vector3 dist = currentTransformPosition - currentTargetPosition;
 		float distMagnitude = dist.magnitude;
 
+
 		if (humanoidInfo != null && !iterationMethod)
 		{
-			CalculateBendAngle(Mathf.Clamp(distMagnitude, minDistance,maxDistance), SignedAngle(Vector3.up, dist));
+			float signedAngle = SignedAngle(Vector3.up, dist);
+			float adjustedSignedAngle = signedAngle;
+			if (Application.isPlaying)
+			{
+				adjustedSignedAngle -= root.eulerAngles.z;
+			}
+			CalculateBendAngle(Mathf.Clamp(distMagnitude, minDistance,maxDistance), adjustedSignedAngle ); //SignedAngle(Vector3.up, dist)
+			if (name == "RightThigh")
+			{
+				Debug.Log("PJC "+name+" pos "+ transform.position+ " rootZ "+ root.eulerAngles.z+" signedAngle "+signedAngle+" adj "+adjustedSignedAngle+" dist "+dist);
+				
+			}
 			return; 
 		}
 
@@ -419,21 +415,18 @@ public class SimpleCCD : MonoBehaviour
 	    transform.eulerAngles = new Vector3(0, 0, angle);
 
 		// Take care of angle limits 
-		if (nodeCache.ContainsKey(transform))
+		foreach (var node in angleLimits)
 		{
+			if (node.Transform != transform)
+			{
+				continue;
+			}
 			// Clamp angle in local space
-			var node = nodeCache[transform];
 			float localZ = transform.localEulerAngles.z;
 			if (localZ > 180)
 			{
 				localZ -= 360;
 			}
-			/*
-			if (transform.name == "IK_Neck_Top")
-			{
-				Debug.Log(transform.name+" localZ" + localZ + " localEul "+transform.localEulerAngles.z+" nodemin="+node.min+" nodemax="+node.max);
-			}
-			*/
 			if (localZ < node.min)
 			{
 				transform.localEulerAngles = new Vector3(0,0,node.min);
